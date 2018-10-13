@@ -16,7 +16,7 @@ public class MovingCube : MonoBehaviour {
         UpdateSpeed();
         gameObject.transform.position += new Vector3(0f, 0f, speed);
     }
-    // Update the speed of the cube
+    // Update the speed of the cubes
     void UpdateSpeed()
     {
         if (gameObject.transform.position.z < -15.0f) speed = 0.1f;
