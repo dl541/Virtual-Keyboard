@@ -7,10 +7,14 @@ public class GenerateKeyboard : MonoBehaviour
 {
     public GameObject keyboardBase;
     public GameObject buttonPrefab;
-
+    private int numOfCols = 10;
+    private int numOfRows = 3;
+    private float buttonSize;
     // Use this for initialization
     void Start()
     {
+        buttonSize = buttonPrefab.GetComponent<RectTransform>().sizeDelta.x;
+        keyboardBase.GetComponent<RectTransform>().sizeDelta = new Vector2(buttonSize * numOfCols, buttonSize * numOfRows);
         GenerateKeys();
     }
 
@@ -22,14 +26,16 @@ public class GenerateKeyboard : MonoBehaviour
 
     void GenerateKeys()
     {
+        Vector3 parentSize = keyboardBase.GetComponent<RectTransform>().sizeDelta;
+        Vector3 upperCorner = new Vector3(-parentSize.x / 2, parentSize.y / 2, 0f);
         string[] firstRow = { "Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P" };
-        instantiateRow(firstRow, Vector3.zero);
+        instantiateRow(firstRow, Vector3.zero + upperCorner);
 
         string[] secondRow = { "A", "S", "D", "F", "G", "H", "J", "K", "L" };
-        instantiateRow(secondRow, new Vector3(25f, -50f, 0f));
+        instantiateRow(secondRow, new Vector3(buttonSize / 2, -buttonSize, 0f) + upperCorner);
 
         string[] thirdRow = { "Z", "X", "C", "V", "B", "N", "M" };
-        instantiateRow(thirdRow, new Vector3(25f, -100f, 0f));
+        instantiateRow(thirdRow, new Vector3(buttonSize / 2, -buttonSize * 2, 0f) + upperCorner);
     }
 
     void instantiateRow(string[] row, Vector3 pos)
@@ -37,7 +43,7 @@ public class GenerateKeyboard : MonoBehaviour
         foreach (string character in row)
         {
             instantiateKey(character, pos);
-            pos.x += 50;
+            pos.x += buttonSize;
         }
     }
 
@@ -46,7 +52,9 @@ public class GenerateKeyboard : MonoBehaviour
         GameObject newButton = Instantiate(buttonPrefab) as GameObject;
         newButton.name = string.Format("Button {0}", character);
         newButton.transform.SetParent(keyboardBase.transform, false);
+
         newButton.transform.localPosition = pos;
+
         GameObject text = newButton.transform.Find("TextMeshPro Text").gameObject;
         TextMeshProUGUI textMesh = text.GetComponent<TextMeshProUGUI>();
         textMesh.SetText(character);
