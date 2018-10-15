@@ -2,17 +2,20 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MovingCube : MonoBehaviour {
+public class MovingCube : MonoBehaviour
+{
 
     private float speed;
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
+    // Use this for initialization
+    void Start()
+    {
+
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
         UpdateSpeed();
         gameObject.transform.position += new Vector3(0f, 0f, speed);
     }

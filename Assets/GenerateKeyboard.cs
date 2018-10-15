@@ -10,10 +10,12 @@ public class GenerateKeyboard : MonoBehaviour
     private int numOfCols = 10;
     private int numOfRows = 3;
     private float buttonSize;
+    private float buttonSpacing;
     // Use this for initialization
     void Start()
     {
         buttonSize = buttonPrefab.GetComponent<RectTransform>().sizeDelta.x;
+        buttonSpacing = buttonSize / 10;
         keyboardBase.GetComponent<RectTransform>().sizeDelta = new Vector2(buttonSize * numOfCols, buttonSize * numOfRows);
         GenerateKeys();
     }
@@ -35,7 +37,7 @@ public class GenerateKeyboard : MonoBehaviour
         instantiateRow(secondRow, new Vector3(buttonSize / 2, -buttonSize, 0f) + upperCorner);
 
         string[] thirdRow = { "Z", "X", "C", "V", "B", "N", "M" };
-        instantiateRow(thirdRow, new Vector3(buttonSize / 2, -buttonSize * 2, 0f) + upperCorner);
+        instantiateRow(thirdRow, new Vector3(buttonSize, -buttonSize * 2, 0f) + upperCorner);
     }
 
     void instantiateRow(string[] row, Vector3 pos)
@@ -43,7 +45,7 @@ public class GenerateKeyboard : MonoBehaviour
         foreach (string character in row)
         {
             instantiateKey(character, pos);
-            pos.x += buttonSize;
+            pos.x += buttonSize + buttonSpacing;
         }
     }
 
