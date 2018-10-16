@@ -11,6 +11,7 @@ public class GenerateKeyboard : MonoBehaviour
     private int numOfRows = 3;
     private float buttonSize;
     private float buttonSpacing;
+    private int spaceBarLengthInButton = 5;
 
     // Use this for initialization
     void Start()
@@ -33,16 +34,27 @@ public class GenerateKeyboard : MonoBehaviour
         Vector3 upperCorner = new Vector3(-parentSize.x / 2, parentSize.y / 2, 0f);
         Vector3 firstPosInRow = Vector3.zero;
 
+        string[] numberRow = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0" };
+        instantiateRow(numberRow, firstPosInRow + upperCorner);
+        firstPosInRow += new Vector3(0f, -buttonSize - buttonSpacing, 0f);
+
+
         string[] firstRow = { "Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P" };
         instantiateRow(firstRow, firstPosInRow + upperCorner);
-        firstPosInRow += new Vector3(buttonSize / 2, -buttonSize - buttonSpacing, 0f); 
+        firstPosInRow += new Vector3(0f, -buttonSize - buttonSpacing, 0f);
+        firstPosInRow.x = buttonSize / 2;
 
         string[] secondRow = { "A", "S", "D", "F", "G", "H", "J", "K", "L" };
         instantiateRow(secondRow, firstPosInRow + upperCorner);
-        firstPosInRow += new Vector3(buttonSize / 2, -buttonSize - buttonSpacing, 0f);
+        firstPosInRow += new Vector3(0f, -buttonSize - buttonSpacing, 0f);
+        firstPosInRow.x = 0;
 
-        string[] thirdRow = { "Z", "X", "C", "V", "B", "N", "M" };
+        string[] thirdRow = { "Shift", "Z", "X", "C", "V", "B", "N", "M", "<-" };
         instantiateRow(thirdRow, firstPosInRow + upperCorner);
+
+        firstPosInRow += new Vector3(0f, -buttonSize - buttonSpacing, 0f);
+        firstPosInRow.x = 2.5f * buttonSize;
+        instantiateKey("Space", firstPosInRow);
     }
 
     void instantiateRow(string[] row, Vector3 pos)
@@ -54,9 +66,10 @@ public class GenerateKeyboard : MonoBehaviour
         }
     }
 
-    void instantiateKey(string character, Vector3 pos)
+    void instantiateKey(string character, Vector3 pos, bool isSpace = false)
     {
         GameObject newButton = Instantiate(buttonPrefab) as GameObject;
+
         newButton.name = string.Format("Button {0}", character);
         newButton.transform.SetParent(keyboardBase.transform, false);
 

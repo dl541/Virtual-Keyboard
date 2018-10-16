@@ -1,14 +1,17 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class InitializeCollider : MonoBehaviour
 {
     private float colliderDepth = 200f;
+    private Button button;
 
     // Use this for initialization
     void Start()
     {
+        button = gameObject.GetComponent<Button>();
         generateCollider();
     }
 
@@ -36,6 +39,7 @@ public class InitializeCollider : MonoBehaviour
     void OnTriggerStay(Collider other)
     {
         Debug.Log(string.Format("{0} is being pressed", gameObject.name));
+
     }
 
     void OnTriggerExit(Collider other)
