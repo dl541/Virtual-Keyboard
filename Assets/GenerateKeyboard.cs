@@ -31,15 +31,18 @@ public class GenerateKeyboard : MonoBehaviour
     {
         Vector3 parentSize = keyboardBase.GetComponent<RectTransform>().sizeDelta;
         Vector3 upperCorner = new Vector3(-parentSize.x / 2, parentSize.y / 2, 0f);
+        Vector3 firstPosInRow = Vector3.zero;
 
         string[] firstRow = { "Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P" };
-        instantiateRow(firstRow, Vector3.zero + upperCorner);
+        instantiateRow(firstRow, firstPosInRow + upperCorner);
+        firstPosInRow += new Vector3(buttonSize / 2, -buttonSize - buttonSpacing, 0f); 
 
         string[] secondRow = { "A", "S", "D", "F", "G", "H", "J", "K", "L" };
-        instantiateRow(secondRow, new Vector3(buttonSize / 2, -buttonSize - buttonSpacing, 0f) + upperCorner);
+        instantiateRow(secondRow, firstPosInRow + upperCorner);
+        firstPosInRow += new Vector3(buttonSize / 2, -buttonSize - buttonSpacing, 0f);
 
         string[] thirdRow = { "Z", "X", "C", "V", "B", "N", "M" };
-        instantiateRow(thirdRow, new Vector3(buttonSize, -buttonSize * 2 - buttonSpacing * 2, 0f) + upperCorner);
+        instantiateRow(thirdRow, firstPosInRow + upperCorner);
     }
 
     void instantiateRow(string[] row, Vector3 pos)
