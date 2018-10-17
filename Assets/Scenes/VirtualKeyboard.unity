@@ -191,6 +191,8 @@ GameObject:
   - component: {fileID: 457878890}
   - component: {fileID: 457878889}
   - component: {fileID: 457878893}
+  - component: {fileID: 457878895}
+  - component: {fileID: 457878894}
   m_Layer: 5
   m_Name: KeyboardBase
   m_TagString: Untagged
@@ -287,6 +289,35 @@ MonoBehaviour:
   keyboardBase: {fileID: 457878888}
   buttonPrefab: {fileID: 1719940494945490, guid: 16aafd1f7d240524ca2666b033db0b8f,
     type: 2}
+--- !u!114 &457878894
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 457878888}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3798790c20f18f949bc288aeca087144, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!95 &457878895
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 457878888}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: da07ba8c8c8b9a446b8c345e8767ef31, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &1262708991
 GameObject:
   m_ObjectHideFlags: 0
@@ -358,7 +389,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1262708991}
   m_LocalRotation: {x: 0, y: -0.258819, z: 0, w: 0.9659259}
-  m_LocalPosition: {x: 258, y: -6.2, z: -124.4}
+  m_LocalPosition: {x: 222, y: -6.2, z: -423}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}

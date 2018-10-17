@@ -62,7 +62,6 @@ public class GenerateKeyboard : MonoBehaviour
 
     void instantiateRow(string[] row, Vector3 pos)
     {
-        Debug.Log(pos);
         foreach (string character in row)
         {
             if (character == spaceBarName)
@@ -90,6 +89,7 @@ public class GenerateKeyboard : MonoBehaviour
 
         GameObject text = newButton.transform.Find("TextMeshPro Text").gameObject;
         TextMeshProUGUI textMesh = text.GetComponent<TextMeshProUGUI>();
+        textMesh.fontSize = 36f;
         textMesh.SetText(character);
     }
 }
