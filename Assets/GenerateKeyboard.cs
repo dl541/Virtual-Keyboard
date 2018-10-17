@@ -12,6 +12,7 @@ public class GenerateKeyboard : MonoBehaviour
     private float buttonSize;
     private float buttonSpacing;
     private int spaceBarLengthInButton = 5;
+    private string spaceBarName = "Space";
 
     // Use this for initialization
     void Start()
@@ -53,23 +54,35 @@ public class GenerateKeyboard : MonoBehaviour
         instantiateRow(thirdRow, firstPosInRow + upperCorner);
 
         firstPosInRow += new Vector3(0f, -buttonSize - buttonSpacing, 0f);
-        firstPosInRow.x = 2.5f * buttonSize;
-        instantiateKey("Space", firstPosInRow);
+        firstPosInRow.x = 0;
+
+        string[] fourthRow = { "123", ",", spaceBarName, ".", "Enter" };
+        instantiateRow(fourthRow, firstPosInRow + upperCorner);
     }
 
     void instantiateRow(string[] row, Vector3 pos)
     {
+        Debug.Log(pos);
         foreach (string character in row)
         {
-            instantiateKey(character, pos);
-            pos.x += buttonSize + buttonSpacing;
+            if (character == spaceBarName)
+            {
+                instantiateKey(character, pos, spaceBarLengthInButton);
+                pos.x += buttonSize * spaceBarLengthInButton + buttonSpacing;
+            }
+            else
+            {
+                instantiateKey(character, pos);
+                pos.x += buttonSize + buttonSpacing;
+            }
         }
     }
 
-    void instantiateKey(string character, Vector3 pos, bool isSpace = false)
+    void instantiateKey(string character, Vector3 pos, int buttonWidth = 1)
     {
         GameObject newButton = Instantiate(buttonPrefab) as GameObject;
-
+        Vector2 sizeDelta = newButton.GetComponent<RectTransform>().sizeDelta;
+        newButton.GetComponent<RectTransform>().sizeDelta = new Vector2(sizeDelta.x * buttonWidth, sizeDelta.y);
         newButton.name = string.Format("Button {0}", character);
         newButton.transform.SetParent(keyboardBase.transform, false);
 
