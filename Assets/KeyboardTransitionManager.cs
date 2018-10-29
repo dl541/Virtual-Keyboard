@@ -12,9 +12,13 @@ public class KeyboardTransitionManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (Input.anyKeyDown)
+        if (Input.GetKeyDown("left shift"))
         {
-            animator.SetInteger("State", (animator.GetInteger("State") + 1) % 3);
+            animator.SetInteger("Shift", (animator.GetInteger("Shift") + 1) % 3);
+        }
+        else if (Input.GetKeyDown("left ctrl"))
+        {
+            animator.SetInteger("Symbol", (animator.GetInteger("Symbol") + 1) % 2);
         }
 	}
 }

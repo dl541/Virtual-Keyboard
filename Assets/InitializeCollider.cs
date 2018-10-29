@@ -1,17 +1,21 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class InitializeCollider : MonoBehaviour
 {
     private float colliderDepth = 200f;
     private Button button;
+    private static InputFieldManager inputFieldManager;
+    private static string inputFieldName = "InputField";
 
     // Use this for initialization
     void Start()
     {
         button = gameObject.GetComponent<Button>();
+        inputFieldManager = GameObject.Find(inputFieldName).GetComponent<InputFieldManager>();
         generateCollider();
     }
 
@@ -33,6 +37,11 @@ public class InitializeCollider : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
+        var pointer = new PointerEventData(EventSystem.current);
+        ExecuteEvents.Execute(button.gameObject, pointer, ExecuteEvents.pointerEnterHandler);
+        ExecuteEvents.Execute(button.gameObject, pointer, ExecuteEvents.pointerDownHandler);
+
+        inputFieldManager.append(gameObject.name);
         Debug.Log(string.Format("{0} is pressed", gameObject.name));
     }
 
@@ -44,6 +53,8 @@ public class InitializeCollider : MonoBehaviour
 
     void OnTriggerExit(Collider other)
     {
+        var pointer = new PointerEventData(EventSystem.current);
+        ExecuteEvents.Execute(button.gameObject, pointer, ExecuteEvents.pointerUpHandler);
         Debug.Log(string.Format("{0} released", gameObject.name));
     }
 
