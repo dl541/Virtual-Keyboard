@@ -82,7 +82,7 @@ public class GenerateKeyboard : MonoBehaviour
         GameObject newButton = Instantiate(buttonPrefab) as GameObject;
         Vector2 sizeDelta = newButton.GetComponent<RectTransform>().sizeDelta;
         newButton.GetComponent<RectTransform>().sizeDelta = new Vector2(sizeDelta.x * buttonWidth, sizeDelta.y);
-        newButton.name = string.Format("Button {0}", character);
+        newButton.name = string.Format("{0}", character);
         newButton.transform.SetParent(keyboardBase.transform, false);
 
         newButton.transform.localPosition = pos;
