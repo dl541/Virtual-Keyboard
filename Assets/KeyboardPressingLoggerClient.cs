@@ -61,6 +61,13 @@ public class KeyboardPressingLoggerClient : MonoBehaviour {
                         Array.Copy(bytes, 0, incommingData, 0, length);
                         // Convert byte array to string message. 						
                         string serverMessage = Encoding.ASCII.GetString(incommingData);
+                        int n;
+                        if (int.TryParse(serverMessage[0].ToString(), out n) == false)
+                        {
+                            Debug.Log("Connection closed");
+                            break;
+                        }
+
                         Debug.Log("server message received as: " + serverMessage);
                     }
                 }
