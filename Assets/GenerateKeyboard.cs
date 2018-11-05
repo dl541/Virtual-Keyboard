@@ -13,6 +13,7 @@ public class GenerateKeyboard : MonoBehaviour
     private float buttonSpacing;
     private int spaceBarLengthInButton = 5;
     private string spaceBarName = "Space";
+    public Hashtable nameKeyMap = new Hashtable();
 
     // Use this for initialization
     void Start()
@@ -91,5 +92,7 @@ public class GenerateKeyboard : MonoBehaviour
         TextMeshProUGUI textMesh = text.GetComponent<TextMeshProUGUI>();
         textMesh.fontSize = 36f;
         textMesh.SetText(character);
+
+        nameKeyMap.Add(newButton.name, newButton);
     }
 }
