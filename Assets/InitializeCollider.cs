@@ -4,12 +4,15 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
+public enum ButtonState {RELEASED, PRESSING, PRESSED, RELEASING};
+
 public class InitializeCollider : MonoBehaviour
 {
     private float colliderDepth = 200f;
     private Button button;
     private static InputFieldManager inputFieldManager;
     private static string inputFieldName = "InputField";
+    public ButtonState buttonState = ButtonState.RELEASED;
 
     // Use this for initialization
     void Start()
@@ -23,6 +26,21 @@ public class InitializeCollider : MonoBehaviour
     void Update()
     {
 
+        switch (buttonState)
+        {
+            case (ButtonState.PRESSING):
+                buttonState = ButtonState.PRESSED;
+                press();
+                break;
+
+            case (ButtonState.RELEASING):
+                buttonState = ButtonState.RELEASED;
+                release();
+                break;
+
+            default:
+                break;
+        }
     }
 
     private void generateCollider()
@@ -35,7 +53,7 @@ public class InitializeCollider : MonoBehaviour
         boxCollider.isTrigger = true;
     }
 
-    void OnTriggerEnter(Collider other)
+    private void press()
     {
         var pointer = new PointerEventData(EventSystem.current);
         ExecuteEvents.Execute(button.gameObject, pointer, ExecuteEvents.pointerEnterHandler);
@@ -43,6 +61,19 @@ public class InitializeCollider : MonoBehaviour
 
         inputFieldManager.append(gameObject.name);
         Debug.Log(string.Format("{0} is pressed", gameObject.name));
+    }
+
+    private void release()
+    {
+        var pointer = new PointerEventData(EventSystem.current);
+        ExecuteEvents.Execute(button.gameObject, pointer, ExecuteEvents.pointerUpHandler);
+        Debug.Log(string.Format("{0} released", gameObject.name));
+    }
+
+
+    void OnTriggerEnter(Collider other)
+    {
+        buttonState = ButtonState.PRESSING;
     }
 
     void OnTriggerStay(Collider other)
@@ -53,9 +84,7 @@ public class InitializeCollider : MonoBehaviour
 
     void OnTriggerExit(Collider other)
     {
-        var pointer = new PointerEventData(EventSystem.current);
-        ExecuteEvents.Execute(button.gameObject, pointer, ExecuteEvents.pointerUpHandler);
-        Debug.Log(string.Format("{0} released", gameObject.name));
+        buttonState = ButtonState.RELEASING;
     }
 
 }
