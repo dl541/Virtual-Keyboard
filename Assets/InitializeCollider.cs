@@ -30,12 +30,12 @@ public class InitializeCollider : MonoBehaviour
         {
             case (ButtonState.PRESSING):
                 buttonState = ButtonState.PRESSED;
-                press();
+                pressAnimation();
                 break;
 
             case (ButtonState.RELEASING):
                 buttonState = ButtonState.RELEASED;
-                release();
+                releaseAnimation();
                 break;
 
             default:
@@ -53,7 +53,7 @@ public class InitializeCollider : MonoBehaviour
         boxCollider.isTrigger = true;
     }
 
-    private void press()
+    private void pressAnimation()
     {
         var pointer = new PointerEventData(EventSystem.current);
         ExecuteEvents.Execute(button.gameObject, pointer, ExecuteEvents.pointerEnterHandler);
@@ -63,7 +63,7 @@ public class InitializeCollider : MonoBehaviour
         Debug.Log(string.Format("{0} is pressed", gameObject.name));
     }
 
-    private void release()
+    private void releaseAnimation()
     {
         var pointer = new PointerEventData(EventSystem.current);
         ExecuteEvents.Execute(button.gameObject, pointer, ExecuteEvents.pointerUpHandler);
