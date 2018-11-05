@@ -7,6 +7,8 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Text;
 
+public enum ButtonAction { PRESS, RELEASE }
+
 public class KeyboardPressingLoggerClient
 {
 
@@ -66,7 +68,23 @@ public class KeyboardPressingLoggerClient
                         string serverMessage = Encoding.ASCII.GetString(incommingData);
                         Debug.Log("server message received as: " + serverMessage);
 
-                        UnityMainThreadDispatcher.Instance().Enqueue(ThisWillBeExecutedOnTheMainThread());
+                        if (serverMessage == "quit")
+                        {
+                            break;
+                        }
+
+                        string[] serverMessageArray = serverMessage.Split(new char[0], StringSplitOptions.RemoveEmptyEntries);
+
+                        //Character message if the first flag is set to 1
+                        if (serverMessageArray[1] == "1")
+                        {
+                            string buttonName = serverMessageArray[serverMessageArray.Length - 1];
+
+                            ButtonAction buttonAction = serverMessageArray[2] == "0" ? ButtonAction.PRESS : ButtonAction.RELEASE;
+
+                            Debug.Log("Action on button " + buttonName);
+                            UnityMainThreadDispatcher.Instance().Enqueue(ThisWillBeExecutedOnTheMainThread(buttonName, buttonAction));
+                        }
                     }
                 }
             }
@@ -77,12 +95,20 @@ public class KeyboardPressingLoggerClient
         }
     }
 
-    public static IEnumerator ThisWillBeExecutedOnTheMainThread()
+    public static IEnumerator ThisWillBeExecutedOnTheMainThread(String buttonName, ButtonAction buttonAction)
     {
         Debug.Log("This is executed from the main thread");
         generateKeyboard = GameObject.Find("BalloonKeyboard").GetComponent<GenerateKeyboard>();
-        qButton = generateKeyboard.nameKeyMap["Q"] as GameObject;
-        qButton.GetComponent<InitializeCollider>().buttonState += 1;
+        qButton = generateKeyboard.nameKeyMap[buttonName] as GameObject;
+
+        if (buttonAction == ButtonAction.PRESS)
+        {
+            qButton.GetComponent<InitializeCollider>().buttonState = ButtonState.PRESSING;
+        }
+        else
+        {
+            qButton.GetComponent<InitializeCollider>().buttonState = ButtonState.RELEASING;
+        }
         yield return null;
     }
 }
