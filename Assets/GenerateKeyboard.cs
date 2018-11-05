@@ -41,17 +41,17 @@ public class GenerateKeyboard : MonoBehaviour
         firstPosInRow += new Vector3(0f, -buttonSize - buttonSpacing, 0f);
 
 
-        string[] firstRow = { "Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P" };
+        string[] firstRow = { "q", "w", "e", "r", "t", "y", "u", "i", "o", "p" };
         instantiateRow(firstRow, firstPosInRow + upperCorner);
         firstPosInRow += new Vector3(0f, -buttonSize - buttonSpacing, 0f);
         firstPosInRow.x = buttonSize / 2;
 
-        string[] secondRow = { "A", "S", "D", "F", "G", "H", "J", "K", "L" };
+        string[] secondRow = { "a", "s", "d", "f", "g", "h", "j", "k", "l" };
         instantiateRow(secondRow, firstPosInRow + upperCorner);
         firstPosInRow += new Vector3(0f, -buttonSize - buttonSpacing, 0f);
         firstPosInRow.x = 0;
 
-        string[] thirdRow = { "Shift", "Z", "X", "C", "V", "B", "N", "M", "<-" };
+        string[] thirdRow = { "Shift", "z", "x", "c", "v", "b", "n", "m", "<-" };
         instantiateRow(thirdRow, firstPosInRow + upperCorner);
 
         firstPosInRow += new Vector3(0f, -buttonSize - buttonSpacing, 0f);
