@@ -7,26 +7,29 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Text;
 
-public class KeyboardPressingLoggerClient : MonoBehaviour {
+public class KeyboardPressingLoggerClient
+{
+
 
     #region private members 	
-    private TcpClient socketConnection;
-    private Thread clientReceiveThread;
+    private static TcpClient socketConnection;
+    private static Thread clientReceiveThread;
+    private static GenerateKeyboard generateKeyboard;
+    private static GameObject qButton;
     #endregion
+
     // Use this for initialization 	
-    void Start()
+    [RuntimeInitializeOnLoadMethod]
+    static void OnRuntimeMethodLoad()
     {
+        Debug.Log("Script is begin run");
         ConnectToTcpServer();
     }
-    // Update is called once per frame
-    void Update()
-    {
 
-    }
     /// <summary> 	
     /// Setup socket connection. 	
     /// </summary> 	
-    private void ConnectToTcpServer()
+    private static void ConnectToTcpServer()
     {
         try
         {
@@ -42,7 +45,7 @@ public class KeyboardPressingLoggerClient : MonoBehaviour {
     /// <summary> 	
     /// Runs in background clientReceiveThread; Listens for incomming data. 	
     /// </summary>     
-    private void ListenForData()
+    private static void ListenForData()
     {
         try
         {
@@ -61,14 +64,9 @@ public class KeyboardPressingLoggerClient : MonoBehaviour {
                         Array.Copy(bytes, 0, incommingData, 0, length);
                         // Convert byte array to string message. 						
                         string serverMessage = Encoding.ASCII.GetString(incommingData);
-                        int n;
-                        if (int.TryParse(serverMessage[0].ToString(), out n) == false)
-                        {
-                            Debug.Log("Connection closed");
-                            break;
-                        }
-
                         Debug.Log("server message received as: " + serverMessage);
+
+                        UnityMainThreadDispatcher.Instance().Enqueue(ThisWillBeExecutedOnTheMainThread());
                     }
                 }
             }
@@ -77,5 +75,14 @@ public class KeyboardPressingLoggerClient : MonoBehaviour {
         {
             Debug.Log("Socket exception: " + socketException);
         }
+    }
+
+    public static IEnumerator ThisWillBeExecutedOnTheMainThread()
+    {
+        Debug.Log("This is executed from the main thread");
+        generateKeyboard = GameObject.Find("BalloonKeyboard").GetComponent<GenerateKeyboard>();
+        qButton = generateKeyboard.nameKeyMap["Q"] as GameObject;
+        qButton.GetComponent<InitializeCollider>().buttonState += 1;
+        yield return null;
     }
 }
