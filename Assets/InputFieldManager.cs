@@ -1,16 +1,17 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class InputFieldManager : MonoBehaviour {
 
-    private static InputField inputField;
+    private static TMP_InputField inputField;
     private int characterLimit = 30;
 
 	// Use this for initialization
 	void Start () {
-        inputField = gameObject.GetComponent<InputField>();
+        inputField = gameObject.GetComponent<TMP_InputField>();
         inputField.characterLimit = characterLimit;
 	}
 	
