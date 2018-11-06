@@ -8,20 +8,33 @@ public class GenerateKeyboard : MonoBehaviour
     public GameObject keyboardBase;
     public GameObject buttonPrefab;
     private int numOfCols = 10;
-    private int numOfRows = 3;
-    private float buttonSize;
-    private float buttonSpacing;
-    private int spaceBarLengthInButton = 5;
+    private int numOfRows = 5;
+    private float buttonSizeX;
+    private float buttonSizeY;
+    private float buttonSpacingX;
+    private float buttonSpacingY;
+    private float spaceBarLengthInButton = 5f;
     private string spaceBarName = "Space";
+    private float horizontalMargin;
+    private float verticalMargin;
     public Hashtable nameKeyMap = new Hashtable();
+
+    //Resolution of phone
+    private Vector2 screenSize = new Vector2(1920f, 1020f);
 
     // Use this for initialization
     void Start()
     {
-        buttonSize = buttonPrefab.GetComponent<RectTransform>().sizeDelta.x;
-        buttonSpacing = buttonSize / 10;
-        keyboardBase.GetComponent<RectTransform>().sizeDelta = new Vector2(buttonSize * numOfCols, buttonSize * numOfRows);
+
+        buttonSizeX = screenSize.x / 10;
+        buttonSizeY = screenSize.y * 0.23f;
+        buttonSpacingX = 0;
+        buttonSpacingY = 0;
+        horizontalMargin = buttonSizeX / 5;
+        verticalMargin = buttonSizeY / 5;
+        keyboardBase.GetComponent<RectTransform>().sizeDelta = screenSize;
         generateKeys();
+
     }
 
     // Update is called once per frame
@@ -36,28 +49,28 @@ public class GenerateKeyboard : MonoBehaviour
         Vector3 upperCorner = new Vector3(-parentSize.x / 2, parentSize.y / 2, 0f);
         Vector3 firstPosInRow = Vector3.zero;
 
-        string[] numberRow = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0" };
-        instantiateRow(numberRow, firstPosInRow + upperCorner);
-        firstPosInRow += new Vector3(0f, -buttonSize - buttonSpacing, 0f);
+        // string[] numberRow = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0" };
+        // instantiateRow(numberRow, firstPosInRow + upperCorner);
+        // firstPosInRow += new Vector3(0f, -buttonSizeY - buttonSpacingY, 0f);
 
 
         string[] firstRow = { "q", "w", "e", "r", "t", "y", "u", "i", "o", "p" };
         instantiateRow(firstRow, firstPosInRow + upperCorner);
-        firstPosInRow += new Vector3(0f, -buttonSize - buttonSpacing, 0f);
-        firstPosInRow.x = buttonSize / 2;
+        firstPosInRow += new Vector3(0f, -buttonSizeY - buttonSpacingY, 0f);
+        firstPosInRow.x = screenSize.x * 0.05f;
 
         string[] secondRow = { "a", "s", "d", "f", "g", "h", "j", "k", "l" };
         instantiateRow(secondRow, firstPosInRow + upperCorner);
-        firstPosInRow += new Vector3(0f, -buttonSize - buttonSpacing, 0f);
+        firstPosInRow += new Vector3(0f, -buttonSizeY - buttonSpacingY, 0f);
         firstPosInRow.x = 0;
 
         string[] thirdRow = { "Shift", "z", "x", "c", "v", "b", "n", "m", "<-" };
         instantiateRow(thirdRow, firstPosInRow + upperCorner);
 
-        firstPosInRow += new Vector3(0f, -buttonSize - buttonSpacing, 0f);
-        firstPosInRow.x = 0;
+        firstPosInRow += new Vector3(0f, -buttonSizeY - buttonSpacingY, 0f);
+        firstPosInRow.x = screenSize.x * 0.25f;
 
-        string[] fourthRow = { "123", ",", spaceBarName, ".", "Enter" };
+        string[] fourthRow = { spaceBarName };
         instantiateRow(fourthRow, firstPosInRow + upperCorner);
     }
 
@@ -68,21 +81,27 @@ public class GenerateKeyboard : MonoBehaviour
             if (character == spaceBarName)
             {
                 instantiateKey(character, pos, spaceBarLengthInButton);
-                pos.x += buttonSize * spaceBarLengthInButton + buttonSpacing;
+                pos.x += buttonSizeX * spaceBarLengthInButton + buttonSpacingX;
             }
+
+            else if (character == "Shift" || character == "<-")
+            {
+                instantiateKey(character, pos, 1.5f);
+                pos.x += buttonSizeX * 1.5f + buttonSpacingX;
+            }
+
             else
             {
                 instantiateKey(character, pos);
-                pos.x += buttonSize + buttonSpacing;
+                pos.x += buttonSizeX + buttonSpacingX;
             }
         }
     }
 
-    void instantiateKey(string character, Vector3 pos, int buttonWidth = 1)
+    void instantiateKey(string character, Vector3 pos, float buttonWidth = 1f)
     {
         GameObject newButton = Instantiate(buttonPrefab) as GameObject;
-        Vector2 sizeDelta = newButton.GetComponent<RectTransform>().sizeDelta;
-        newButton.GetComponent<RectTransform>().sizeDelta = new Vector2(sizeDelta.x * buttonWidth, sizeDelta.y);
+        newButton.GetComponent<RectTransform>().sizeDelta = new Vector2(buttonSizeX * buttonWidth, buttonSizeY);
         newButton.name = string.Format("{0}", character);
         newButton.transform.SetParent(keyboardBase.transform, false);
 
