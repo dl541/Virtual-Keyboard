@@ -26,7 +26,7 @@ GameObject:
   - component: {fileID: 114826075798986528}
   - component: {fileID: 114298971684470732}
   m_Layer: 5
-  m_Name: KeyboardButton
+  m_Name: BalloonButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -264,6 +264,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c63f7c42a47980c4e9703be7fd1ab190, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  buttonState: 0
+  animationType: 1
 --- !u!222 &222608764412732722
 CanvasRenderer:
   m_ObjectHideFlags: 1

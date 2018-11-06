@@ -28,6 +28,22 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &1804959466072928
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 224498170098538340}
+  - component: {fileID: 114911562093492572}
+  m_Layer: 5
+  m_Name: TriggerCollider
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!1 &1830462097053462
 GameObject:
   m_ObjectHideFlags: 0
@@ -42,7 +58,7 @@ GameObject:
   - component: {fileID: 114830753141234970}
   - component: {fileID: 114586818327419920}
   - component: {fileID: 54709230044116936}
-  - component: {fileID: 114720077364486800}
+  - component: {fileID: 114819006255935514}
   m_Layer: 5
   m_Name: SpringButton
   m_TagString: Untagged
@@ -230,7 +246,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
---- !u!114 &114720077364486800
+--- !u!114 &114819006255935514
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -238,9 +254,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1830462097053462}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f91f86fc1c3c4d04ab57b97d8ac361dc, type: 3}
+  m_Script: {fileID: 11500000, guid: c63f7c42a47980c4e9703be7fd1ab190, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  buttonState: 0
+  animationType: 0
 --- !u!114 &114830753141234970
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -253,6 +271,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_ShowMaskGraphic: 1
+--- !u!114 &114911562093492572
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1804959466072928}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c506bdfb2edd48479fa066b37f191f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114973474011563398
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -305,6 +334,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 224510495849264652}
+  - {fileID: 224498170098538340}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -313,6 +343,24 @@ RectTransform:
   m_AnchoredPosition: {x: 453.9, y: 197.3}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0, y: 1}
+--- !u!224 &224498170098538340
+RectTransform:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1804959466072928}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 224449058212506922}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224510495849264652
 RectTransform:
   m_ObjectHideFlags: 1
