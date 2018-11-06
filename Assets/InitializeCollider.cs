@@ -5,6 +5,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public enum ButtonState {RELEASED, PRESSING, PRESSED, RELEASING};
+public enum AnimationType {SPRING, BALLOON}
 
 public class InitializeCollider : MonoBehaviour
 {
@@ -13,6 +14,8 @@ public class InitializeCollider : MonoBehaviour
     private static InputFieldManager inputFieldManager;
     private static string inputFieldName = "InputField";
     public ButtonState buttonState = ButtonState.RELEASED;
+    private ButtonAnimation animationScript;
+    public AnimationType animationType;
 
     // Use this for initialization
     void Start()
@@ -20,6 +23,7 @@ public class InitializeCollider : MonoBehaviour
         button = gameObject.GetComponent<Button>();
         inputFieldManager = GameObject.Find(inputFieldName).GetComponent<InputFieldManager>();
         generateCollider();
+        setAnimationScript();
     }
 
     // Update is called once per frame
@@ -30,12 +34,15 @@ public class InitializeCollider : MonoBehaviour
         {
             case (ButtonState.PRESSING):
                 buttonState = ButtonState.PRESSED;
-                pressAnimation();
+                inputFieldManager.append(gameObject.name);
+                Debug.Log(string.Format("{0} is pressed", gameObject.name));
+                animationScript.pressAnimation(button);
                 break;
 
             case (ButtonState.RELEASING):
                 buttonState = ButtonState.RELEASED;
-                releaseAnimation();
+                Debug.Log(string.Format("{0} released", gameObject.name));
+                animationScript.releaseAnimation(button);
                 break;
 
             default:
@@ -53,24 +60,6 @@ public class InitializeCollider : MonoBehaviour
         boxCollider.isTrigger = true;
     }
 
-    private void pressAnimation()
-    {
-        var pointer = new PointerEventData(EventSystem.current);
-        ExecuteEvents.Execute(button.gameObject, pointer, ExecuteEvents.pointerEnterHandler);
-        ExecuteEvents.Execute(button.gameObject, pointer, ExecuteEvents.pointerDownHandler);
-
-        inputFieldManager.append(gameObject.name);
-        Debug.Log(string.Format("{0} is pressed", gameObject.name));
-    }
-
-    private void releaseAnimation()
-    {
-        var pointer = new PointerEventData(EventSystem.current);
-        ExecuteEvents.Execute(button.gameObject, pointer, ExecuteEvents.pointerUpHandler);
-        Debug.Log(string.Format("{0} released", gameObject.name));
-    }
-
-
     void OnTriggerEnter(Collider other)
     {
         buttonState = ButtonState.PRESSING;
@@ -87,4 +76,19 @@ public class InitializeCollider : MonoBehaviour
         buttonState = ButtonState.RELEASING;
     }
 
+    void setAnimationScript()
+    {
+        switch (animationType)
+        {
+            case (AnimationType.BALLOON):
+                animationScript = gameObject.AddComponent<BalloonAnimation>();
+                break;
+
+            case (AnimationType.SPRING):
+                animationScript = gameObject.AddComponent<SpringAnimation>();
+                break;
+            default:
+                break;
+        }
+    }
 }

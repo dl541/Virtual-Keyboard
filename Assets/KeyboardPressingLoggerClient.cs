@@ -98,16 +98,16 @@ public class KeyboardPressingLoggerClient
     public static IEnumerator ThisWillBeExecutedOnTheMainThread(String buttonName, ButtonAction buttonAction)
     {
         Debug.Log("This is executed from the main thread");
-        generateKeyboard = GameObject.Find("BalloonKeyboard").GetComponent<GenerateKeyboard>();
-        qButton = generateKeyboard.nameKeyMap[buttonName] as GameObject;
+        generateKeyboard = GameObject.Find("KeyboardBase").GetComponent<GenerateKeyboard>();
+        GameObject buttonPressed = generateKeyboard.nameKeyMap[buttonName] as GameObject;
 
         if (buttonAction == ButtonAction.PRESS)
         {
-            qButton.GetComponent<InitializeCollider>().buttonState = ButtonState.PRESSING;
+            buttonPressed.GetComponent<InitializeCollider>().buttonState = ButtonState.PRESSING;
         }
         else
         {
-            qButton.GetComponent<InitializeCollider>().buttonState = ButtonState.RELEASING;
+            buttonPressed.GetComponent<InitializeCollider>().buttonState = ButtonState.RELEASING;
         }
         yield return null;
     }
