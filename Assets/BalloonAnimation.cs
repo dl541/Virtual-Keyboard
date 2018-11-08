@@ -11,6 +11,7 @@ public class BalloonAnimation : ButtonAnimation {
         var pointer = new PointerEventData(EventSystem.current);
         ExecuteEvents.Execute(button.gameObject, pointer, ExecuteEvents.pointerEnterHandler);
         ExecuteEvents.Execute(button.gameObject, pointer, ExecuteEvents.pointerDownHandler);
+        playAudio();
     }
 
     override public void releaseAnimation(Button button)

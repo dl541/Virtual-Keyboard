@@ -435,6 +435,10 @@ Prefab:
       propertyPath: m_isInputParsingRequired
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1894143970111486, guid: b0642aa9424ed9740815759d518533f6, type: 2}
+      propertyPath: m_Name
+      value: KeyboardBase
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b0642aa9424ed9740815759d518533f6, type: 2}
   m_IsPrefabAsset: 0
