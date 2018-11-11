@@ -13,6 +13,9 @@ public class SpringAnimation : ButtonAnimation{
         //Move keyboard button
         button.gameObject.transform.position = new Vector3(button.gameObject.transform.position.x, button.gameObject.transform.position.y, maxDepth);
 
+        //Render this button first, but after the panel
+        button.gameObject.transform.SetSiblingIndex(1);
+
         //Shading
         var pointer = new PointerEventData(EventSystem.current);
         ExecuteEvents.Execute(button.gameObject, pointer, ExecuteEvents.pointerEnterHandler);
@@ -29,6 +32,7 @@ public class SpringAnimation : ButtonAnimation{
 
         var pointer = new PointerEventData(EventSystem.current);
         ExecuteEvents.Execute(button.gameObject, pointer, ExecuteEvents.pointerUpHandler);
+        ExecuteEvents.Execute(button.gameObject, pointer, ExecuteEvents.pointerExitHandler);
 
     }
 }
