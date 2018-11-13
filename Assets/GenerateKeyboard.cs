@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -14,10 +15,12 @@ public class GenerateKeyboard : MonoBehaviour
     private float buttonSpacingX;
     private float buttonSpacingY;
     private float spaceBarLengthInButton = 5f;
-    private string spaceBarName = "Space";
+    private string spaceBarName = " ";
     private float horizontalMargin;
     private float verticalMargin;
-    public Hashtable nameKeyMap = new Hashtable();
+    private List<GameObject> buttonList = new List<GameObject>();
+    public Dictionary<string, GameObject> nameKeyMap = new Dictionary<string, GameObject>();
+    public Dictionary<float, string[]> posToRowMap = new Dictionary<float, string[]>();
 
     //Resolution of phone
     private Vector2 screenSize = new Vector2(1920f, 1020f);
@@ -34,6 +37,12 @@ public class GenerateKeyboard : MonoBehaviour
         verticalMargin = buttonSizeY / 5;
         keyboardBase.GetComponent<RectTransform>().sizeDelta = screenSize;
         generateKeys();
+        buttonList.Sort(new GridBasedComparer());
+
+        foreach (GameObject button in buttonList)
+        {
+            Debug.Log(string.Format("button {0}", button.name));
+        }
 
     }
 
@@ -58,20 +67,29 @@ public class GenerateKeyboard : MonoBehaviour
         instantiateRow(firstRow, firstPosInRow + upperCorner);
         firstPosInRow += new Vector3(0f, -buttonSizeY - buttonSpacingY, 0f);
         firstPosInRow.x = screenSize.x * 0.05f;
+        UpdateRowMap(firstRow);
 
         string[] secondRow = { "a", "s", "d", "f", "g", "h", "j", "k", "l" };
         instantiateRow(secondRow, firstPosInRow + upperCorner);
         firstPosInRow += new Vector3(0f, -buttonSizeY - buttonSpacingY, 0f);
         firstPosInRow.x = 0;
+        UpdateRowMap(secondRow);
 
         string[] thirdRow = { "Shift", "z", "x", "c", "v", "b", "n", "m", "<-" };
         instantiateRow(thirdRow, firstPosInRow + upperCorner);
-
         firstPosInRow += new Vector3(0f, -buttonSizeY - buttonSpacingY, 0f);
         firstPosInRow.x = screenSize.x * 0.25f;
+        UpdateRowMap(thirdRow);
 
         string[] fourthRow = { spaceBarName };
         instantiateRow(fourthRow, firstPosInRow + upperCorner);
+        UpdateRowMap(fourthRow);
+    }
+
+    void UpdateRowMap(string[] row)
+    {
+        GameObject firstItem = nameKeyMap[row[0]];
+        posToRowMap.Add(firstItem.GetComponent<RectTransform>().anchoredPosition.y, row);
     }
 
     void instantiateRow(string[] row, Vector3 pos)
@@ -113,5 +131,84 @@ public class GenerateKeyboard : MonoBehaviour
         textMesh.SetText(character);
 
         nameKeyMap.Add(newButton.name, newButton);
+        buttonList.Add(newButton);
+    }
+
+
+    public void CoordinateToButton(Vector2 coord, ButtonState buttonState)
+    {
+        ButtonGridSearcher(coord).GetComponent<InitializeCollider>().buttonState = buttonState;
+    }
+
+    private GameObject ButtonGridSearcher(Vector2 coord)
+    {
+        //GameObject dummyGameObject = new GameObject();
+        //dummyGameObject.transform.position = coord;
+        //int index = buttonList.BinarySearch(dummyGameObject, new GridBasedComparer());
+        //index = index > 0 ? index : ~index;
+        //Destroy(dummyGameObject);
+        //Debug.Log(string.Format("Index in List: {0}", index));
+        //return buttonList[index];
+
+
+        //introduce offset since the button anchor positions are based on their upper left corners
+        coord = coord + new Vector2(-buttonSizeX / 2, buttonSizeY / 2);
+        Debug.Log("Corrected coord " + coord);
+
+        float closestYCoord = float.MaxValue;
+        foreach (float yCoord in posToRowMap.Keys)
+        {
+            Debug.Log("Key " + yCoord);
+            if (Math.Abs(coord.y - yCoord) < Math.Abs(coord.y - closestYCoord))
+            {
+                closestYCoord = yCoord;
+            }
+        }
+
+        GameObject closestGameObject = nameKeyMap[posToRowMap[closestYCoord][0]];
+        foreach (string buttonName in posToRowMap[closestYCoord])
+        {
+            GameObject button = nameKeyMap[buttonName];
+            if (Math.Abs(coord.x - button.GetComponent<RectTransform>().anchoredPosition.x) < 
+                Math.Abs(coord.x - closestGameObject.GetComponent<RectTransform>().anchoredPosition.x))
+            {
+                closestGameObject = button;
+            }
+        }
+
+        Debug.Log(string.Format("Closest object {0}", closestGameObject.name));
+        return closestGameObject;
+    }
+}
+
+public class GridBasedComparer : IComparer<GameObject>
+{
+    public int Compare(GameObject gameObject1, GameObject gameObject2)
+    {
+        Debug.Log(string.Format("Comparing {0} {1}", gameObject1.name, gameObject2.name));
+        Vector3 pos1 = gameObject1.transform.position;
+        Vector3 pos2 = gameObject2.GetComponent<RectTransform>().anchoredPosition;
+        Vector3 pos3 = gameObject2.transform.localPosition;
+        Debug.Log(string.Format("Comparing {0} {1} {2}", pos1, pos2, pos3));
+        if (pos1.y == pos2.y)
+        {
+            if (pos1.x == pos2.x)
+            {
+                return 0;
+            }
+            if (pos1.x < pos2.x)
+            {
+                return -1;
+            }
+            return 1;
+        }
+        else
+        {
+            if (pos1.y < pos2.y)
+            {
+                return 1;
+            }
+            return -1;
+        }
     }
 }
