@@ -75,17 +75,30 @@ public class KeyboardPressingLoggerClient
 
                         string[] serverMessageArray = serverMessage.Split(new char[0], StringSplitOptions.RemoveEmptyEntries);
 
-                        //Character message if the first flag is set to 1
-                        if (serverMessageArray[1] == "1")
+                        if (serverMessageArray[1] == "0")
                         {
-                            string buttonName = serverMessageArray[serverMessageArray.Length - 1];
+                            Vector2 coordinates = new Vector2(float.Parse(serverMessageArray[serverMessageArray.Length-2]),
+                                -float.Parse(serverMessageArray[serverMessageArray.Length - 1]));
+                            
+                            ButtonAction buttonAction = serverMessageArray[2] == "0"? ButtonAction.PRESS: ButtonAction.RELEASE;
 
-                            ButtonAction buttonAction = serverMessageArray[2] == "0" ? ButtonAction.PRESS : ButtonAction.RELEASE;
-
-                            Debug.Log("Action on button " + buttonName);
-                            UnityMainThreadDispatcher.Instance().Enqueue(ThisWillBeExecutedOnTheMainThread(buttonName, buttonAction));
+                            UnityMainThreadDispatcher.Instance().Enqueue(sendCoordinatesToMainThread(coordinates, buttonAction));
                         }
+
+
+                        ////Character message if the first flag is set to 1
+                        //if (serverMessageArray[1] == "1")
+                        //{
+                        //    string buttonName = serverMessageArray[serverMessageArray.Length - 1];
+
+                        //    ButtonAction buttonAction = serverMessageArray[2] == "0" ? ButtonAction.PRESS : ButtonAction.RELEASE;
+
+                        //    Debug.Log("Action on button " + buttonName);
+                        //    UnityMainThreadDispatcher.Instance().Enqueue(ThisWillBeExecutedOnTheMainThread(buttonName, buttonAction));
+                        //}
+
                     }
+                    Debug.Log("Connection closed");
                 }
             }
         }
@@ -95,10 +108,29 @@ public class KeyboardPressingLoggerClient
         }
     }
 
+    public static IEnumerator sendCoordinatesToMainThread(Vector2 coord, ButtonAction buttonAction)
+    {
+        Debug.Log(string.Format("Coordinates {0} to main thread.", coord));
+        generateKeyboard = GameObject.Find("KeyboardBase").GetComponent<GenerateKeyboard>();
+
+
+        if (buttonAction == ButtonAction.PRESS)
+        {
+            generateKeyboard.CoordinateToButton(coord, ButtonState.PRESSING);
+        }
+        else
+        {
+            generateKeyboard.CoordinateToButton(coord, ButtonState.RELEASING);
+        }
+        yield return null;
+    }
+
+
     public static IEnumerator ThisWillBeExecutedOnTheMainThread(String buttonName, ButtonAction buttonAction)
     {
         Debug.Log("This is executed from the main thread");
         generateKeyboard = GameObject.Find("KeyboardBase").GetComponent<GenerateKeyboard>();
+        
         GameObject buttonPressed = generateKeyboard.nameKeyMap[buttonName] as GameObject;
 
         if (buttonAction == ButtonAction.PRESS)
