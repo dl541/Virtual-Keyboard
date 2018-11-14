@@ -80,7 +80,7 @@ public class KeyboardPressingLoggerClient
                             Vector2 coordinates = new Vector2(float.Parse(serverMessageArray[serverMessageArray.Length-2]),
                                 -float.Parse(serverMessageArray[serverMessageArray.Length - 1]));
                             
-                            ButtonAction buttonAction = serverMessageArray[2] == "0"? ButtonAction.PRESS: ButtonAction.RELEASE;
+                            ButtonAction buttonAction = (serverMessageArray[2] == "0" || serverMessageArray[2] == "5")? ButtonAction.PRESS: ButtonAction.RELEASE;
 
                             UnityMainThreadDispatcher.Instance().Enqueue(sendCoordinatesToMainThread(coordinates, buttonAction));
                         }
