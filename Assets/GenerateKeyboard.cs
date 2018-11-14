@@ -37,6 +37,12 @@ public class GenerateKeyboard : MonoBehaviour
         verticalMargin = buttonSizeY / 5;
         keyboardBase.GetComponent<RectTransform>().sizeDelta = screenSize;
         generateKeys();
+        buttonList.Sort(new GridBasedComparer());
+
+        foreach (GameObject button in buttonList)
+        {
+            Debug.Log(string.Format("button {0}", button.name));
+        }
 
         foreach (GameObject button in buttonList)
         {
@@ -168,5 +174,3 @@ public class GenerateKeyboard : MonoBehaviour
 
         Debug.Log(string.Format("Closest object {0}", closestGameObject.name));
         return closestGameObject;
-    }
-}
