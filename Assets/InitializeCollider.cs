@@ -29,20 +29,22 @@ public class InitializeCollider : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (button.name == "q")
+        {
+            Debug.Log("Button state is " + buttonState);
+        }
 
         switch (buttonState)
         {
             case (ButtonState.PRESSING):
-                buttonState = ButtonState.PRESSED;
-                inputFieldManager.append(gameObject.name);
                 Debug.Log(string.Format("{0} is pressed", gameObject.name));
                 animationScript.pressAnimation(button);
                 break;
 
             case (ButtonState.RELEASING):
-                buttonState = ButtonState.RELEASED;
                 Debug.Log(string.Format("{0} released", gameObject.name));
                 animationScript.releaseAnimation(button);
+                inputFieldManager.append(gameObject.name);
                 break;
 
             default:
