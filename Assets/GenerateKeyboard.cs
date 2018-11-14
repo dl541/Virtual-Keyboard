@@ -37,7 +37,6 @@ public class GenerateKeyboard : MonoBehaviour
         verticalMargin = buttonSizeY / 5;
         keyboardBase.GetComponent<RectTransform>().sizeDelta = screenSize;
         generateKeys();
-        buttonList.Sort(new GridBasedComparer());
 
         foreach (GameObject button in buttonList)
         {
@@ -142,15 +141,6 @@ public class GenerateKeyboard : MonoBehaviour
 
     private GameObject ButtonGridSearcher(Vector2 coord)
     {
-        //GameObject dummyGameObject = new GameObject();
-        //dummyGameObject.transform.position = coord;
-        //int index = buttonList.BinarySearch(dummyGameObject, new GridBasedComparer());
-        //index = index > 0 ? index : ~index;
-        //Destroy(dummyGameObject);
-        //Debug.Log(string.Format("Index in List: {0}", index));
-        //return buttonList[index];
-
-
         //introduce offset since the button anchor positions are based on their upper left corners
         coord = coord + new Vector2(-buttonSizeX / 2, buttonSizeY / 2);
         Debug.Log("Corrected coord " + coord);
@@ -178,37 +168,5 @@ public class GenerateKeyboard : MonoBehaviour
 
         Debug.Log(string.Format("Closest object {0}", closestGameObject.name));
         return closestGameObject;
-    }
-}
-
-public class GridBasedComparer : IComparer<GameObject>
-{
-    public int Compare(GameObject gameObject1, GameObject gameObject2)
-    {
-        Debug.Log(string.Format("Comparing {0} {1}", gameObject1.name, gameObject2.name));
-        Vector3 pos1 = gameObject1.transform.position;
-        Vector3 pos2 = gameObject2.GetComponent<RectTransform>().anchoredPosition;
-        Vector3 pos3 = gameObject2.transform.localPosition;
-        Debug.Log(string.Format("Comparing {0} {1} {2}", pos1, pos2, pos3));
-        if (pos1.y == pos2.y)
-        {
-            if (pos1.x == pos2.x)
-            {
-                return 0;
-            }
-            if (pos1.x < pos2.x)
-            {
-                return -1;
-            }
-            return 1;
-        }
-        else
-        {
-            if (pos1.y < pos2.y)
-            {
-                return 1;
-            }
-            return -1;
-        }
     }
 }
