@@ -6,13 +6,12 @@ using UnityEngine.UI;
 
 public class SpringAnimation : ButtonAnimation{
 
-    public static float maxDepth = 10f;
+    public static float maxDepth = 20f;
+    private static int maxFrameIndex = 1;
+    private int frameIndex = 0;
 
     override public void pressAnimation(Button button)
     {
-        //Move keyboard button
-        button.gameObject.transform.position = new Vector3(button.gameObject.transform.position.x, button.gameObject.transform.position.y, maxDepth);
-
         //Render this button first, but after the panel
         button.gameObject.transform.SetSiblingIndex(1);
 
@@ -22,7 +21,19 @@ public class SpringAnimation : ButtonAnimation{
         ExecuteEvents.Execute(button.gameObject, pointer, ExecuteEvents.pointerDownHandler);
 
         //Play audio
-        playAudio();
+        //playAudio();
+
+        if (frameIndex >= maxFrameIndex)
+        {
+            button.GetComponent<InitializeCollider>().buttonState = ButtonState.PRESSED;
+            frameIndex = 0;
+        }
+        else
+        {
+            //Move keyboard button
+            button.gameObject.transform.position += new Vector3(0f, 0f, maxDepth/maxFrameIndex);
+            frameIndex += 1;
+        }
 
     }
 
@@ -33,6 +44,8 @@ public class SpringAnimation : ButtonAnimation{
         var pointer = new PointerEventData(EventSystem.current);
         ExecuteEvents.Execute(button.gameObject, pointer, ExecuteEvents.pointerUpHandler);
         ExecuteEvents.Execute(button.gameObject, pointer, ExecuteEvents.pointerExitHandler);
+
+        button.GetComponent<InitializeCollider>().buttonState = ButtonState.RELEASED;
 
     }
 }

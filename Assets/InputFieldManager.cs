@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class InputFieldManager : MonoBehaviour {
 
     private static TMP_InputField inputField;
-    private int characterLimit = 30;
+    private int characterLimit = 60;
 
 	// Use this for initialization
 	void Start () {
