@@ -7,8 +7,15 @@ using UnityEngine.UI;
 public class SpringAnimation : ButtonAnimation{
 
     public static float maxDepth = 20f;
-    private static int maxFrameIndex = 1;
+    private static int maxFrameIndex = 2;
     private int frameIndex = 0;
+    private static InputFieldManager inputFieldManager;
+    private static string inputFieldName = "InputField";
+
+    private void Start()
+    {
+        inputFieldManager = GameObject.Find(inputFieldName).GetComponent<InputFieldManager>();
+    }
 
     override public void pressAnimation(Button button)
     {
@@ -45,7 +52,18 @@ public class SpringAnimation : ButtonAnimation{
         ExecuteEvents.Execute(button.gameObject, pointer, ExecuteEvents.pointerUpHandler);
         ExecuteEvents.Execute(button.gameObject, pointer, ExecuteEvents.pointerExitHandler);
 
-        button.GetComponent<InitializeCollider>().buttonState = ButtonState.RELEASED;
+        if (frameIndex >= maxFrameIndex)
+        {
+            button.GetComponent<InitializeCollider>().buttonState = ButtonState.RELEASED;
+            inputFieldManager.append(gameObject.name);
+            frameIndex = 0;
+        }
+        else
+        {
+            //Move keyboard button
+            button.gameObject.transform.position += new Vector3(0f, 0f, maxDepth / maxFrameIndex);
+            frameIndex += 1;
+        }
 
     }
 }
