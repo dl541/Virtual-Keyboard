@@ -22,9 +22,9 @@ public class InputFieldManager : MonoBehaviour {
 
     public void append(string character)
     {
-        if (inputField.characterLimit == inputField.text.Length)
+        if (inputField.characterLimit <= inputField.text.Length)
         {
-            inputField.text = inputField.text.Substring(1, inputField.text.Length - 1);
+            inputField.text = inputField.text.Substring(1, inputField.characterLimit-1);
         }
         inputField.text += character;
     }
