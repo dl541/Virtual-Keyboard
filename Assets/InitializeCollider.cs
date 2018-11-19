@@ -27,7 +27,7 @@ public class InitializeCollider : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         if (button.name == "q")
         {
@@ -44,7 +44,6 @@ public class InitializeCollider : MonoBehaviour
             case (ButtonState.RELEASING):
                 Debug.Log(string.Format("{0} released", gameObject.name));
                 animationScript.releaseAnimation(button);
-                inputFieldManager.append(gameObject.name);
                 break;
 
             default:
