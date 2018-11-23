@@ -18,7 +18,7 @@ public class AddText : MonoBehaviour {
     void attachText()
     {
         buttonText.transform.SetParent(gameObject.transform, false);
-        buttonText.transform.localPosition = new Vector3(0f, 0f, -0.01f);
+        buttonText.transform.position = gameObject.GetComponentInParent<Transform>().position + new Vector3 (0f, 0f, -0.01f);
         buttonText.transform.localRotation = Quaternion.identity;
     }
 
