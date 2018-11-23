@@ -2,9 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class MeshGenerator : MonoBehaviour {
-
+    public GameObject buttonTextPrefab;
+    private GameObject buttonText;
+    private Site buttonSite;
     float width = 100;
     float height = 100;
     bool rendered = false;
@@ -19,7 +22,7 @@ public class MeshGenerator : MonoBehaviour {
     {
         if (rendered == false)
         {
-            Site buttonSite = GetComponentInParent<VoronoiGeneration>().buttonSiteDictionary[name];
+            buttonSite = GetComponentInParent<VoronoiGeneration>().buttonSiteDictionary[name];
             Rectf bounds = GetComponentInParent<VoronoiGeneration>().bounds;
 
             Mesh mesh = new Mesh();
@@ -47,7 +50,19 @@ public class MeshGenerator : MonoBehaviour {
 
             gameObject.GetComponent<MeshFilter>().mesh = mesh;
 
+            attachText();
+
             rendered = true;
         }
     }
+
+    public void attachText()
+    {
+        buttonText = Instantiate(buttonTextPrefab) as GameObject;
+        buttonText.transform.SetParent(gameObject.transform, false);
+        buttonText.transform.localPosition = new Vector3(buttonSite.x, buttonSite.y, -0.01f);
+        buttonText.transform.localRotation = Quaternion.identity;
+        buttonText.GetComponentInChildren<TextMeshProUGUI>().text = name;
+    }
+
 }
