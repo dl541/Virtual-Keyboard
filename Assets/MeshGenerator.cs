@@ -7,7 +7,7 @@ using TMPro;
 public class MeshGenerator : MonoBehaviour {
     public GameObject buttonTextPrefab;
     private GameObject buttonText;
-    private Site buttonSite;
+    public Site buttonSite;
     float width = 100;
     float height = 100;
     bool rendered = false;

@@ -25,6 +25,7 @@ public class VoronoiGeneration : MonoBehaviour {
     private Dictionary<Vector2f, Site> sites;
     private List<Edge> edges;
     private GameObject customButton;
+    private List<GameObject> buttonList = new List<GameObject>();
 
     // Parameters for keyboard
     private int numOfCols = 10;
@@ -45,8 +46,6 @@ public class VoronoiGeneration : MonoBehaviour {
 
         List<Vector2f> points = GeneratePointsFromFile();
 
-        // There is a two ways you can create the voronoi diagram: with or without the lloyd relaxation
-        // Here I used it with 2 iterations of the lloyd relaxation
         Voronoi voronoi = new Voronoi(points, bounds);
 
         // But you could also create it without lloyd relaxtion and call that function later if you want
@@ -76,6 +75,7 @@ public class VoronoiGeneration : MonoBehaviour {
         {
             customButton = Instantiate(customButtonPrefab, transform);
             customButton.name = entry.Key;
+            buttonList.Add(customButton);
             
         }
     }
@@ -117,18 +117,29 @@ public class VoronoiGeneration : MonoBehaviour {
         return points;
     }
 
-
-    private List<Vector2f> CreateRandomPoint()
+    public void CoordinateToButton(Vector2 coord, ButtonState buttonState)
     {
-        // Use Vector2f, instead of Vector2
-        // Vector2f is pretty much the same than Vector2, but like you could run Voronoi in another thread
-        List<Vector2f> points = new List<Vector2f>();
-        for (int i = 0; i < polygonNumber; i++)
+        ClosestMeanSearcher(coord).GetComponent<InitializeCollider>().buttonState = buttonState;
+    }
+
+    private GameObject ClosestMeanSearcher(Vector2 coord)
+    {
+        GameObject closestButton = buttonList[0];
+        double closestDistance = double.MaxValue;
+
+        foreach (GameObject button in buttonList)
         {
-            points.Add(new Vector2f(UnityEngine.Random.Range(0, width), UnityEngine.Random.Range(0, height)));
+            Vector2f meanPos = button.GetComponent<MeshGenerator>().buttonSite.Coord;
+            double norm = Math.Pow(meanPos.x - coord.x, 2) + Math.Pow(meanPos.y - coord.y, 2);
+            if (norm < closestDistance)
+            {
+                closestButton = button;
+                closestDistance = norm;
+            }
+
         }
 
-        return points;
+        return closestButton;
     }
 
     // Here is a very simple way to display the result using a simple bresenham line algorithm

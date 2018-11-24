@@ -16,7 +16,6 @@ public class KeyboardPressingLoggerClient
     #region private members 	
     private static TcpClient socketConnection;
     private static Thread clientReceiveThread;
-    private static GenerateKeyboard generateKeyboard;
     private static GameObject qButton;
     #endregion
 
@@ -75,16 +74,14 @@ public class KeyboardPressingLoggerClient
 
                         string[] serverMessageArray = serverMessage.Split(new char[0], StringSplitOptions.RemoveEmptyEntries);
 
-                        if (serverMessageArray[1] == "0")
-                        {
-                            Vector2 coordinates = new Vector2(float.Parse(serverMessageArray[serverMessageArray.Length-2]),
-                                -float.Parse(serverMessageArray[serverMessageArray.Length - 1]));
-                            
-                            ButtonAction buttonAction = (serverMessageArray[2] == "0" || serverMessageArray[2] == "5")? ButtonAction.PRESS: ButtonAction.RELEASE;
+                        Vector2 coordinates = new Vector2(float.Parse(serverMessageArray[serverMessageArray.Length - 2]),
+                            float.Parse(serverMessageArray[serverMessageArray.Length - 1]));
 
-                            UnityMainThreadDispatcher.Instance().Enqueue(sendCoordinatesToMainThread(coordinates, buttonAction));
-                        }
+                        ButtonAction buttonAction = (serverMessageArray[2] == "0" || serverMessageArray[2] == "5") ? ButtonAction.PRESS : ButtonAction.RELEASE;
 
+
+                        UnityMainThreadDispatcher.Instance().Enqueue(sendCoordinatesToMainThread(coordinates, buttonAction, serverMessageArray[1]));
+                    
 
                         ////Character message if the first flag is set to 1
                         //if (serverMessageArray[1] == "1")
@@ -108,39 +105,44 @@ public class KeyboardPressingLoggerClient
         }
     }
 
-    public static IEnumerator sendCoordinatesToMainThread(Vector2 coord, ButtonAction buttonAction)
+    public static IEnumerator sendCoordinatesToMainThread(Vector2 coord, ButtonAction buttonAction, string keyboard)
     {
         Debug.Log(string.Format("Coordinates {0} to main thread.", coord));
-        generateKeyboard = GameObject.Find("KeyboardBase").GetComponent<GenerateKeyboard>();
+        Debug.Log(string.Format("Keyboard {0} is used", keyboard));
 
-
-        if (buttonAction == ButtonAction.PRESS)
+        if (keyboard == "0")
         {
-            generateKeyboard.CoordinateToButton(coord, ButtonState.PRESSING);
+            var generateKeyboard = GameObject.Find("KeyboardBase").GetComponent<GenerateKeyboard>();
+            coord = new Vector2(coord.x, -coord.y);
+            if (buttonAction == ButtonAction.PRESS)
+            {
+                generateKeyboard.CoordinateToButton(coord, ButtonState.PRESSING);
+            }
+            else
+            {
+                generateKeyboard.CoordinateToButton(coord, ButtonState.RELEASING);
+            }
+
         }
+
         else
         {
-            generateKeyboard.CoordinateToButton(coord, ButtonState.RELEASING);
+             var generateKeyboard = GameObject.Find("KeyboardBase").GetComponent<VoronoiGeneration>();
+
+            //Flip coordinates upside down
+            coord = new Vector2(coord.x, 1080f-coord.y);
+            if (buttonAction == ButtonAction.PRESS)
+            {
+                generateKeyboard.CoordinateToButton(coord, ButtonState.PRESSING);
+            }
+            else
+            {
+                generateKeyboard.CoordinateToButton(coord, ButtonState.RELEASING);
+            }
         }
-        yield return null;
-    }
 
 
-    public static IEnumerator ThisWillBeExecutedOnTheMainThread(String buttonName, ButtonAction buttonAction)
-    {
-        Debug.Log("This is executed from the main thread");
-        generateKeyboard = GameObject.Find("KeyboardBase").GetComponent<GenerateKeyboard>();
-        
-        GameObject buttonPressed = generateKeyboard.nameKeyMap[buttonName] as GameObject;
 
-        if (buttonAction == ButtonAction.PRESS)
-        {
-            buttonPressed.GetComponent<InitializeCollider>().buttonState = ButtonState.PRESSING;
-        }
-        else
-        {
-            buttonPressed.GetComponent<InitializeCollider>().buttonState = ButtonState.RELEASING;
-        }
         yield return null;
     }
 }

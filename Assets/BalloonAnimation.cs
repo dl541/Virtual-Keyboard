@@ -6,17 +6,17 @@ using UnityEngine.UI;
 
 public class BalloonAnimation : ButtonAnimation {
 
-    override public void pressAnimation(Button button)
+    override public void pressAnimation(GameObject button)
     {
         var pointer = new PointerEventData(EventSystem.current);
-        ExecuteEvents.Execute(button.gameObject, pointer, ExecuteEvents.pointerEnterHandler);
-        ExecuteEvents.Execute(button.gameObject, pointer, ExecuteEvents.pointerDownHandler);
+        ExecuteEvents.Execute(button, pointer, ExecuteEvents.pointerEnterHandler);
+        ExecuteEvents.Execute(button, pointer, ExecuteEvents.pointerDownHandler);
         playAudio();
     }
 
-    override public void releaseAnimation(Button button)
+    override public void releaseAnimation(GameObject button)
     {
         var pointer = new PointerEventData(EventSystem.current);
-        ExecuteEvents.Execute(button.gameObject, pointer, ExecuteEvents.pointerUpHandler);
+        ExecuteEvents.Execute(button, pointer, ExecuteEvents.pointerUpHandler);
     }
 }

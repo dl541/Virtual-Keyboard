@@ -5,8 +5,8 @@ using UnityEngine.UI;
 
 public abstract class ButtonAnimation:MonoBehaviour
 {
-    public abstract void pressAnimation(Button button);
-    public abstract void releaseAnimation(Button button);
+    public abstract void pressAnimation(GameObject button);
+    public abstract void releaseAnimation(GameObject button);
 
     public void playAudio()
     {
