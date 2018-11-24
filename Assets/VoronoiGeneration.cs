@@ -2,6 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
+using System;
+using System.Globalization;
 
 public class VoronoiGeneration : MonoBehaviour {
 
@@ -9,24 +12,38 @@ public class VoronoiGeneration : MonoBehaviour {
     public Dictionary<string, Site> buttonSiteDictionary = new Dictionary<string, Site>();
 
     // The number of polygons/sites we want
-    public int polygonNumber = 3;
+    public int polygonNumber = 26;
 
-    public Rectf bounds = new Rectf(0, 0, 512, 512);
+    //Resolution of phone
+    private Vector2 screenSize = new Vector2(1920f, 1020f);
+    private float width = 1920f;
+    private float height = 1080f;
+    public Rectf bounds;
+
 
     // This is where we will store the resulting data
     private Dictionary<Vector2f, Site> sites;
     private List<Edge> edges;
     private GameObject customButton;
 
+    // Parameters for keyboard
+    private int numOfCols = 10;
+    private int numOfRows = 5;
+    private float buttonSizeX;
+    private float buttonSizeY;
+    private float buttonSpacingX;
+    private float buttonSpacingY;
+    private float spaceBarLengthInButton = 5f;
+    private string spaceBarName = " ";
+    private float horizontalMargin;
+    private float verticalMargin;
+
 
     void Awake()
     {
-        // Create your sites (lets call that the center of your polygons)
-        List<Vector2f> points = CreateRandomPoint();
+        bounds = new Rectf(0, 0, width, height);
 
-        // Create the bounds of the voronoi diagram
-        // Use Rectf instead of Rect; it's a struct just like Rect and does pretty much the same,
-        // but like that it allows you to run the delaunay library outside of unity (which mean also in another tread)
+        List<Vector2f> points = GeneratePointsFromFile();
 
         // There is a two ways you can create the voronoi diagram: with or without the lloyd relaxation
         // Here I used it with 2 iterations of the lloyd relaxation
@@ -63,6 +80,44 @@ public class VoronoiGeneration : MonoBehaviour {
         }
     }
 
+    private List<Vector2f> GeneratePointsFromFile()
+    {
+        List<Vector2f> points = new List<Vector2f>();
+        string line;
+        try
+        {
+            //Pass the file path and file name to the StreamReader constructor
+            StreamReader sr = new StreamReader("D:\\Unity3D\\Virtual keyboard\\keyboard_data.txt");
+
+            //Read the first line of text
+            line = sr.ReadLine();
+
+            //Continue to read until you reach end of file
+            while (line != null)
+            {
+                string[] splitString = line.Split('\t');
+                points.Add(new Vector2f(float.Parse(splitString[0], CultureInfo.InvariantCulture.NumberFormat), screenSize.y - float.Parse(splitString[1], CultureInfo.InvariantCulture.NumberFormat)));
+
+                //Read the next line
+                line = sr.ReadLine();
+            }
+
+            //close the file
+            sr.Close();
+            Console.ReadLine();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Exception: " + e.Message);
+        }
+        finally
+        {
+            Console.WriteLine("Executing finally block.");
+        }
+        return points;
+    }
+
+
     private List<Vector2f> CreateRandomPoint()
     {
         // Use Vector2f, instead of Vector2
@@ -70,7 +125,7 @@ public class VoronoiGeneration : MonoBehaviour {
         List<Vector2f> points = new List<Vector2f>();
         for (int i = 0; i < polygonNumber; i++)
         {
-            points.Add(new Vector2f(Random.Range(0, 512), Random.Range(0, 512)));
+            points.Add(new Vector2f(UnityEngine.Random.Range(0, width), UnityEngine.Random.Range(0, height)));
         }
 
         return points;

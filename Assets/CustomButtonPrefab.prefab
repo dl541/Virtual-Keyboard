@@ -22,6 +22,7 @@ GameObject:
   - component: {fileID: 33815155299121004}
   - component: {fileID: 23794689965522666}
   - component: {fileID: 114550126697546740}
+  - component: {fileID: 114344405982213704}
   m_Layer: 0
   m_Name: CustomButtonPrefab
   m_TagString: Untagged
@@ -84,6 +85,17 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1261945147792506}
   m_Mesh: {fileID: 0}
+--- !u!114 &114344405982213704
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1261945147792506}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb09f7f4a1f16bd4586d8feb4eba8b5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114550126697546740
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -95,3 +107,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1253d40b79b7a734e962bb4a298e6735, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  buttonTextPrefab: {fileID: 1547534771393684, guid: 0ecba8226655fae4399424b91ac2e9af,
+    type: 2}
