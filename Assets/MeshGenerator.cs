@@ -12,6 +12,9 @@ public class MeshGenerator : MonoBehaviour {
     float height = 100;
     bool rendered = false;
 
+    private float maxColorValue = 0.9f;
+    private float minColorValue = 0.5f;
+
 
 	// Use this for initialization
 	void Start () {
@@ -28,6 +31,8 @@ public class MeshGenerator : MonoBehaviour {
             setRandomColor();
             rendered = true;
         }
+
+        updateColor();
     }
 
     private void renderMesh()
@@ -78,4 +83,14 @@ public class MeshGenerator : MonoBehaviour {
         gameObject.GetComponent<Renderer>().material.color = randomColor;
     }
 
+    private void updateColor()
+    {
+        if (transform.position.z != 0f)
+        {
+            float newValue = maxColorValue - transform.position.z / SpringAnimation.maxDepth * (maxColorValue - minColorValue);
+            float H, S, V;
+            Color.RGBToHSV(gameObject.GetComponent<Renderer>().material.color, out H, out S, out V);
+            gameObject.GetComponent<Renderer>().material.color = Color.HSVToRGB(H, S, newValue);
+        }
+    }
 }
