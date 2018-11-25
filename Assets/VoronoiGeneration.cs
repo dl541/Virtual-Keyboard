@@ -59,9 +59,11 @@ public class VoronoiGeneration : MonoBehaviour {
 
 
         int entryInd = 0;
+        int ascii = 97;
         foreach (KeyValuePair<Vector2f, Site> entry in sites)
         {
-            buttonSiteDictionary.Add(entryInd.ToString(), entry.Value);
+            char character = (char)(entryInd + ascii);
+            buttonSiteDictionary.Add(character.ToString(), entry.Value);
             entryInd += 1;
         }
 

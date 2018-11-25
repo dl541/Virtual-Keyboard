@@ -25,7 +25,7 @@ public class MeshGenerator : MonoBehaviour {
             buttonSite = GetComponentInParent<VoronoiGeneration>().buttonSiteDictionary[name];
             renderMesh();
             attachText();
-
+            setRandomColor();
             rendered = true;
         }
     }
@@ -68,6 +68,14 @@ public class MeshGenerator : MonoBehaviour {
         buttonText.transform.localPosition = new Vector3(buttonSite.x, buttonSite.y, -0.01f);
         buttonText.transform.localRotation = Quaternion.identity;
         buttonText.GetComponentInChildren<TextMeshProUGUI>().text = name;
+    }
+
+    private void setRandomColor()
+    {
+        int ascii = gameObject.name.ToCharArray()[0];
+        float hue = (ascii-97) / 26f;
+        Color randomColor = Color.HSVToRGB(Random.value, Random.value, 0.9f);
+        gameObject.GetComponent<Renderer>().material.color = randomColor;
     }
 
 }
