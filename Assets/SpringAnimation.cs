@@ -17,15 +17,15 @@ public class SpringAnimation : ButtonAnimation{
         inputFieldManager = GameObject.Find(inputFieldName).GetComponent<InputFieldManager>();
     }
 
-    override public void pressAnimation(Button button)
+    override public void pressAnimation(GameObject button)
     {
         //Render this button first, but after the panel
-        button.gameObject.transform.SetSiblingIndex(1);
+        button.transform.SetSiblingIndex(1);
 
         //Shading
         var pointer = new PointerEventData(EventSystem.current);
-        ExecuteEvents.Execute(button.gameObject, pointer, ExecuteEvents.pointerEnterHandler);
-        ExecuteEvents.Execute(button.gameObject, pointer, ExecuteEvents.pointerDownHandler);
+        ExecuteEvents.Execute(button, pointer, ExecuteEvents.pointerEnterHandler);
+        ExecuteEvents.Execute(button, pointer, ExecuteEvents.pointerDownHandler);
 
         //Play audio
         //playAudio();
@@ -38,30 +38,30 @@ public class SpringAnimation : ButtonAnimation{
         else
         {
             //Move keyboard button
-            button.gameObject.transform.position += new Vector3(0f, 0f, maxDepth/maxFrameIndex);
+            button.transform.position += new Vector3(0f, 0f, maxDepth/maxFrameIndex);
             frameIndex += 1;
         }
 
     }
 
-    override public void releaseAnimation(Button button)
+    override public void releaseAnimation(GameObject button)
     {
-        button.gameObject.transform.position = new Vector3(button.gameObject.transform.position.x, button.gameObject.transform.position.y, 0f);
+        button.transform.position = new Vector3(button.transform.position.x, button.transform.position.y, 0f);
 
         var pointer = new PointerEventData(EventSystem.current);
-        ExecuteEvents.Execute(button.gameObject, pointer, ExecuteEvents.pointerUpHandler);
-        ExecuteEvents.Execute(button.gameObject, pointer, ExecuteEvents.pointerExitHandler);
+        ExecuteEvents.Execute(button, pointer, ExecuteEvents.pointerUpHandler);
+        ExecuteEvents.Execute(button, pointer, ExecuteEvents.pointerExitHandler);
 
         if (frameIndex >= maxFrameIndex)
         {
             button.GetComponent<InitializeCollider>().buttonState = ButtonState.RELEASED;
-            inputFieldManager.append(gameObject.name);
+            inputFieldManager.append(button.name);
             frameIndex = 0;
         }
         else
         {
             //Move keyboard button
-            button.gameObject.transform.position += new Vector3(0f, 0f, maxDepth / maxFrameIndex);
+            button.transform.position += new Vector3(0f, 0f, maxDepth / maxFrameIndex);
             frameIndex += 1;
         }
 
