@@ -39,6 +39,10 @@ public class VoronoiGeneration : MonoBehaviour {
     private float horizontalMargin;
     private float verticalMargin;
 
+    //Path for printing logs
+    private string path;
+    private StreamWriter sw;
+
 
     void Awake()
     {
@@ -80,6 +84,8 @@ public class VoronoiGeneration : MonoBehaviour {
             buttonList.Add(customButton);
             
         }
+        path = string.Format("{0}.txt", DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss-fff"));
+
     }
 
     private List<Vector2f> GeneratePointsFromFile()
@@ -142,6 +148,27 @@ public class VoronoiGeneration : MonoBehaviour {
         }
 
         return closestButton;
+    }
+
+    public void printTextToFile(string text)
+    {
+        if (sw == null)
+        {
+            Debug.Log(String.Format("Printing logs to {0}", path));
+        }
+        sw = new StreamWriter(path, true);
+        Debug.Log("Print logs to file");
+        sw.WriteLine(text);
+        sw.Close();
+    }
+
+    public void closeStreamWriter()
+    {
+        if (sw != null)
+        {
+            Debug.Log("Close streamswriter");
+            sw.Close();
+        }
     }
 
     // Here is a very simple way to display the result using a simple bresenham line algorithm

@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Text;
+using System.IO;
 
 public enum ButtonAction { PRESS, RELEASE }
 
@@ -58,7 +59,8 @@ public class KeyboardPressingLoggerClient
                 using (NetworkStream stream = socketConnection.GetStream())
                 {
                     int length;
-                    // Read incomming stream into byte arrary. 					
+                    
+                        // Read incomming stream into byte arrary. 					
                     while ((length = stream.Read(bytes, 0, bytes.Length)) != 0)
                     {
                         var incommingData = new byte[length];
@@ -80,20 +82,8 @@ public class KeyboardPressingLoggerClient
                         ButtonAction buttonAction = (serverMessageArray[2] == "0" || serverMessageArray[2] == "5") ? ButtonAction.PRESS : ButtonAction.RELEASE;
 
 
-                        UnityMainThreadDispatcher.Instance().Enqueue(sendCoordinatesToMainThread(coordinates, buttonAction, serverMessageArray[1]));
-                    
-
-                        ////Character message if the first flag is set to 1
-                        //if (serverMessageArray[1] == "1")
-                        //{
-                        //    string buttonName = serverMessageArray[serverMessageArray.Length - 1];
-
-                        //    ButtonAction buttonAction = serverMessageArray[2] == "0" ? ButtonAction.PRESS : ButtonAction.RELEASE;
-
-                        //    Debug.Log("Action on button " + buttonName);
-                        //    UnityMainThreadDispatcher.Instance().Enqueue(ThisWillBeExecutedOnTheMainThread(buttonName, buttonAction));
-                        //}
-
+                        UnityMainThreadDispatcher.Instance().Enqueue(sendCoordinatesToMainThread(coordinates, buttonAction, serverMessageArray[1], serverMessage));
+          
                     }
                     Debug.Log("Connection closed");
                 }
@@ -105,7 +95,7 @@ public class KeyboardPressingLoggerClient
         }
     }
 
-    public static IEnumerator sendCoordinatesToMainThread(Vector2 coord, ButtonAction buttonAction, string keyboard)
+    public static IEnumerator sendCoordinatesToMainThread(Vector2 coord, ButtonAction buttonAction, string keyboard, string log)
     {
         Debug.Log(string.Format("Coordinates {0} to main thread.", coord));
         Debug.Log(string.Format("Keyboard {0} is used", keyboard));
@@ -122,6 +112,8 @@ public class KeyboardPressingLoggerClient
             {
                 generateKeyboard.CoordinateToButton(coord, ButtonState.RELEASING);
             }
+            string logWithTime = string.Format("{0}\t{1}", DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss-fff"), log);
+            generateKeyboard.printTextToFile(logWithTime);
 
         }
 
@@ -139,6 +131,8 @@ public class KeyboardPressingLoggerClient
             {
                 generateKeyboard.CoordinateToButton(coord, ButtonState.RELEASING);
             }
+            string logWithTime = string.Format("{0}\t{1}", DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss-fff"), log);
+            generateKeyboard.printTextToFile(logWithTime);
         }
 
 

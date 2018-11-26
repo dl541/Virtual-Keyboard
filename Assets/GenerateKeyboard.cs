@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using TMPro;
 using UnityEngine;
 
@@ -25,6 +26,10 @@ public class GenerateKeyboard : MonoBehaviour
     //Resolution of phone
     private Vector2 screenSize = new Vector2(1920f, 1020f);
 
+    //Path for printing logs
+    private string path;
+    private StreamWriter sw;
+
     // Use this for initialization
     void Start()
     {
@@ -43,7 +48,7 @@ public class GenerateKeyboard : MonoBehaviour
         {
             Debug.Log(string.Format("button {0}", button.name));
         }
-
+        path = string.Format("{0}.txt", DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss-fff"));
     }
 
     // Update is called once per frame
@@ -138,6 +143,18 @@ public class GenerateKeyboard : MonoBehaviour
     public void CoordinateToButton(Vector2 coord, ButtonState buttonState)
     {
         ButtonGridSearcher(coord).GetComponent<InitializeCollider>().buttonState = buttonState;
+    }
+
+    public void printTextToFile(string text)
+    {
+        if (sw == null)
+        {
+            Debug.Log(String.Format("Printing logs to {0}", path));
+        }
+        sw = new StreamWriter(path, true);
+        Debug.Log("Print logs to file");
+        sw.WriteLine(text);
+        sw.Close();
     }
 
     private GameObject ButtonGridSearcher(Vector2 coord)
