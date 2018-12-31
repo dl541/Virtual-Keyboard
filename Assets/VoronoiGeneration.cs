@@ -98,7 +98,7 @@ public class VoronoiGeneration : MonoBehaviour {
         try
         {
             //Pass the file path and file name to the StreamReader constructor
-            StreamReader sr = new StreamReader("C:\\Users\\Dave Lei\\Part IIB project\\Virtual-Keyboard\\keyboard_data.txt");
+            StreamReader sr = new StreamReader(string.Format("{0}\\{1}",Environment.CurrentDirectory,"keyboard_data.txt"));
 
             //Read the first line of text
             line = sr.ReadLine();
