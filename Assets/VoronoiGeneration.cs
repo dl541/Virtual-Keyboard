@@ -16,8 +16,8 @@ public class VoronoiGeneration : MonoBehaviour {
 
     //Resolution of phone
     private Vector2 screenSize = new Vector2(1920f, 1020f);
-    private float width = 1920f;
-    private float height = 1080f;
+    private float widthPortion = 1f;
+    private float heightPortion = 0.75f;
     public Rectf bounds;
 
 
@@ -39,6 +39,8 @@ public class VoronoiGeneration : MonoBehaviour {
     private float horizontalMargin;
     private float verticalMargin;
 
+    // Parameters for Lloyd's relaxation
+    private int numOfIterations = 25;
     //Path for printing logs
     private string path;
     private StreamWriter sw;
@@ -46,17 +48,13 @@ public class VoronoiGeneration : MonoBehaviour {
 
     void Awake()
     {
-        bounds = new Rectf(0, 0, width, height);
+        bounds = new Rectf(0, 0, screenSize.x * widthPortion, screenSize.y * heightPortion);
 
         List<Vector2f> points = GeneratePointsFromFile();
 
         Voronoi voronoi = new Voronoi(points, bounds);
+        voronoi.LloydRelaxation(numOfIterations); 
 
-        // But you could also create it without lloyd relaxtion and call that function later if you want
-        //Voronoi voronoi = new Voronoi(points,bounds);
-        //voronoi.LloydRelaxation(5);
-
-        // Now retreive the edges from it, and the new sites position if you used lloyd relaxtion
         sites = voronoi.SitesIndexedByLocation;
         Debug.Log("Number of sites " + sites.Count);
         edges = voronoi.Edges;
@@ -64,8 +62,12 @@ public class VoronoiGeneration : MonoBehaviour {
 
         int entryInd = 0;
         int ascii = 97;
+
+
+
         foreach (KeyValuePair<Vector2f, Site> entry in sites)
         {
+            print(string.Format("Entry position {0}", entry.Key));
             char character = (char)(entryInd + ascii);
             buttonSiteDictionary.Add(character.ToString(), entry.Value);
             entryInd += 1;
@@ -84,6 +86,7 @@ public class VoronoiGeneration : MonoBehaviour {
             buttonList.Add(customButton);
             
         }
+
         path = string.Format("{0}.txt", DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss-fff"));
 
     }
@@ -95,7 +98,7 @@ public class VoronoiGeneration : MonoBehaviour {
         try
         {
             //Pass the file path and file name to the StreamReader constructor
-            StreamReader sr = new StreamReader("D:\\Unity3D\\Virtual keyboard\\keyboard_data.txt");
+            StreamReader sr = new StreamReader("C:\\Users\\Dave Lei\\Part IIB project\\Virtual-Keyboard\\keyboard_data.txt");
 
             //Read the first line of text
             line = sr.ReadLine();
@@ -104,7 +107,7 @@ public class VoronoiGeneration : MonoBehaviour {
             while (line != null)
             {
                 string[] splitString = line.Split('\t');
-                points.Add(new Vector2f(float.Parse(splitString[0], CultureInfo.InvariantCulture.NumberFormat), screenSize.y - float.Parse(splitString[1], CultureInfo.InvariantCulture.NumberFormat)));
+                points.Add(new Vector2f(float.Parse(splitString[0], CultureInfo.InvariantCulture.NumberFormat), screenSize.y * heightPortion - float.Parse(splitString[1], CultureInfo.InvariantCulture.NumberFormat)));
 
                 //Read the next line
                 line = sr.ReadLine();
