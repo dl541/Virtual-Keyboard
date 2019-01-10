@@ -68,6 +68,7 @@ public class VoronoiGeneration : MonoBehaviour {
         Debug.Log("Number of sites " + sites.Count);
         edges = voronoi.Edges;
 
+        // Measure how far away the current positions are from the original positions
         var positionDiffList = new SortedList<float, KeyValuePair<string, Site>>();
         foreach (KeyValuePair<Vector2f, Site> entry in sites)
         {
@@ -81,7 +82,8 @@ public class VoronoiGeneration : MonoBehaviour {
                 positionDiffList.Add(difference.magnitude, new KeyValuePair<string, Site>(record.Key, entry.Value));
             }
         }
-        
+
+        // Select combinations with the smallest difference
         foreach (var entry in positionDiffList)
         {
             var charSitePair = entry.Value;
@@ -90,6 +92,8 @@ public class VoronoiGeneration : MonoBehaviour {
                 buttonSiteDictionary[charSitePair.Key] = charSitePair.Value;
             }
         }
+
+        // Correct for the error between x and z
         Site temp = buttonSiteDictionary["x"];
         buttonSiteDictionary["x"] = buttonSiteDictionary["z"];
         buttonSiteDictionary["z"] = temp;
