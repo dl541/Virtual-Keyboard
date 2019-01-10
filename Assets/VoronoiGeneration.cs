@@ -3,8 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
-using System;
+using System.Linq;
 using System.Globalization;
+using System;
 
 public class VoronoiGeneration : MonoBehaviour {
 
@@ -40,38 +41,58 @@ public class VoronoiGeneration : MonoBehaviour {
     private float verticalMargin;
 
     // Parameters for Lloyd's relaxation
-    private int numOfIterations = 25;
+    private int numOfIterations = 15;
     //Path for printing logs
     private string path;
     private StreamWriter sw;
 
+    public string SpaceBarName
+    {
+        get
+        {
+            return spaceBarName;
+        }
+
+    }
 
     void Awake()
     {
         bounds = new Rectf(0, 0, screenSize.x * widthPortion, screenSize.y * heightPortion);
 
-        List<Vector2f> points = GeneratePointsFromFile();
+        Dictionary<string, Vector2f> points = GeneratePointsFromFile();
 
-        Voronoi voronoi = new Voronoi(points, bounds);
+        Voronoi voronoi = new Voronoi(points.Values.ToList(), bounds);
         voronoi.LloydRelaxation(numOfIterations); 
 
         sites = voronoi.SitesIndexedByLocation;
         Debug.Log("Number of sites " + sites.Count);
         edges = voronoi.Edges;
 
-
-        int entryInd = 0;
-        int ascii = 97;
-
-
-
+        var positionDiffList = new SortedList<float, KeyValuePair<string, Site>>();
         foreach (KeyValuePair<Vector2f, Site> entry in sites)
         {
-            print(string.Format("Entry position {0}", entry.Key));
-            char character = (char)(entryInd + ascii);
-            buttonSiteDictionary.Add(character.ToString(), entry.Value);
-            entryInd += 1;
+            Vector2f sitePosition = entry.Key;
+            foreach (KeyValuePair<string, Vector2f> record in points)
+            {
+                Debug.Log(record.Key);
+                Vector2f originalPosition = record.Value;
+                Vector2f difference = originalPosition - sitePosition;
+                Debug.Log(difference);
+                positionDiffList.Add(difference.magnitude, new KeyValuePair<string, Site>(record.Key, entry.Value));
+            }
         }
+        
+        foreach (var entry in positionDiffList)
+        {
+            var charSitePair = entry.Value;
+            if (!buttonSiteDictionary.ContainsKey(charSitePair.Key) && !buttonSiteDictionary.ContainsValue(charSitePair.Value))
+            {
+                buttonSiteDictionary[charSitePair.Key] = charSitePair.Value;
+            }
+        }
+        Site temp = buttonSiteDictionary["x"];
+        buttonSiteDictionary["x"] = buttonSiteDictionary["z"];
+        buttonSiteDictionary["z"] = temp;
 
         DisplayVoronoiDiagram();
     }
@@ -91,9 +112,9 @@ public class VoronoiGeneration : MonoBehaviour {
 
     }
 
-    private List<Vector2f> GeneratePointsFromFile()
+    private Dictionary<string,Vector2f> GeneratePointsFromFile()
     {
-        List<Vector2f> points = new List<Vector2f>();
+        Dictionary<string, Vector2f> points = new Dictionary<string, Vector2f>();
         string line;
         try
         {
@@ -107,7 +128,8 @@ public class VoronoiGeneration : MonoBehaviour {
             while (line != null)
             {
                 string[] splitString = line.Split('\t');
-                points.Add(new Vector2f(float.Parse(splitString[0], CultureInfo.InvariantCulture.NumberFormat), screenSize.y * heightPortion - float.Parse(splitString[1], CultureInfo.InvariantCulture.NumberFormat)));
+                
+                points[splitString[2]] = new Vector2f(float.Parse(splitString[0], CultureInfo.InvariantCulture.NumberFormat), screenSize.y * heightPortion - float.Parse(splitString[1], CultureInfo.InvariantCulture.NumberFormat));
 
                 //Read the next line
                 line = sr.ReadLine();
