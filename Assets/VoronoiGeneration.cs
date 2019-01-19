@@ -27,6 +27,7 @@ public class VoronoiGeneration : MonoBehaviour {
     private List<Edge> edges;
     private GameObject customButton;
     private List<GameObject> buttonList = new List<GameObject>();
+    private Dictionary<string, Vector2f> points;
 
     // Parameters for keyboard
     private int numOfCols = 10;
@@ -59,15 +60,18 @@ public class VoronoiGeneration : MonoBehaviour {
     {
         bounds = new Rectf(0, 0, screenSize.x * widthPortion, screenSize.y * heightPortion);
 
-        Dictionary<string, Vector2f> points = GeneratePointsFromFile();
+        points = GeneratePointsFromFile();
 
         Voronoi voronoi = new Voronoi(points.Values.ToList(), bounds);
-        voronoi.LloydRelaxation(numOfIterations); 
 
         sites = voronoi.SitesIndexedByLocation;
         Debug.Log("Number of sites " + sites.Count);
-        edges = voronoi.Edges;
 
+        foreach (KeyValuePair<string, Vector2f> entry in points)
+        {
+            buttonSiteDictionary[entry.Key] = sites[entry.Value];
+        }
+/**
         // Measure how far away the current positions are from the original positions
         var positionDiffList = new SortedList<float, KeyValuePair<string, Site>>();
         foreach (KeyValuePair<Vector2f, Site> entry in sites)
@@ -92,13 +96,7 @@ public class VoronoiGeneration : MonoBehaviour {
                 buttonSiteDictionary[charSitePair.Key] = charSitePair.Value;
             }
         }
-
-        // Correct for the error between x and z
-        Site temp = buttonSiteDictionary["x"];
-        buttonSiteDictionary["x"] = buttonSiteDictionary["z"];
-        buttonSiteDictionary["z"] = temp;
-
-        DisplayVoronoiDiagram();
+    **/
     }
 
     void Start()
@@ -106,12 +104,11 @@ public class VoronoiGeneration : MonoBehaviour {
         Debug.Log("Generate custom buttons");
         foreach (KeyValuePair<string, Site> entry in buttonSiteDictionary)
         {
+           
             customButton = Instantiate(customButtonPrefab, transform);
             customButton.name = entry.Key;
             buttonList.Add(customButton);
-            
         }
-
         path = string.Format("{0}.txt", DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss-fff"));
 
     }
@@ -123,7 +120,7 @@ public class VoronoiGeneration : MonoBehaviour {
         try
         {
             //Pass the file path and file name to the StreamReader constructor
-            StreamReader sr = new StreamReader(string.Format("{0}\\{1}",Environment.CurrentDirectory,"keyboard_data.txt"));
+            StreamReader sr = new StreamReader(string.Format("{0}\\{1}",Environment.CurrentDirectory,"voronoi_keyboard_data.txt"));
 
             //Read the first line of text
             line = sr.ReadLine();
@@ -133,7 +130,7 @@ public class VoronoiGeneration : MonoBehaviour {
             {
                 string[] splitString = line.Split('\t');
                 
-                points[splitString[2]] = new Vector2f(float.Parse(splitString[0], CultureInfo.InvariantCulture.NumberFormat), screenSize.y * heightPortion - float.Parse(splitString[1], CultureInfo.InvariantCulture.NumberFormat));
+                points[splitString[2]] = new Vector2f(float.Parse(splitString[0], CultureInfo.InvariantCulture.NumberFormat), float.Parse(splitString[1], CultureInfo.InvariantCulture.NumberFormat));
 
                 //Read the next line
                 line = sr.ReadLine();
@@ -156,7 +153,20 @@ public class VoronoiGeneration : MonoBehaviour {
 
     public void CoordinateToButton(Vector2 coord, ButtonState buttonState)
     {
-        ClosestMeanSearcher(coord).GetComponent<InitializeCollider>().buttonState = buttonState;
+        GameObject closestButton = ClosestMeanSearcher(coord);
+        closestButton.GetComponent<InitializeCollider>().buttonState = buttonState;
+
+        
+    }
+
+    private void UpdateMeanPosition(string key, Vector2f coord)
+    {
+        float adaptiveRate = 0.01f;
+        float deltaX = (coord.x - points[key].x) * adaptiveRate;
+        float deltaY = (coord.y - points[key].y) * adaptiveRate;
+        points[key] = points[key] + new Vector2f(deltaX, deltaY);
+
+        Debug.Log(string.Format("Key: {0}, Position: {1}", key, points[key]));
     }
 
     private GameObject ClosestMeanSearcher(Vector2 coord)
@@ -179,7 +189,7 @@ public class VoronoiGeneration : MonoBehaviour {
         return closestButton;
     }
 
-    public void printTextToFile(string text)
+    public void PrintTextToFile(string text)
     {
         if (sw == null)
         {
@@ -197,60 +207,6 @@ public class VoronoiGeneration : MonoBehaviour {
         {
             Debug.Log("Close streamswriter");
             sw.Close();
-        }
-    }
-
-    // Here is a very simple way to display the result using a simple bresenham line algorithm
-    // Just attach this script to a quad
-    private void DisplayVoronoiDiagram()
-    {
-        Texture2D tx = new Texture2D(512, 512);
-        foreach (KeyValuePair<Vector2f, Site> kv in sites)
-        {
-            tx.SetPixel((int)kv.Key.x, (int)kv.Key.y, Color.red);
-        }
-        foreach (Edge edge in edges)
-        {
-            // if the edge doesn't have clippedEnds, if was not within the bounds, dont draw it
-            if (edge.ClippedEnds == null) continue;
-
-            DrawLine(edge.ClippedEnds[LR.LEFT], edge.ClippedEnds[LR.RIGHT], tx, Color.black);
-        }
-        tx.Apply();
-
-        this.GetComponent<Renderer>().material.mainTexture = tx;
-    }
-
-    // Bresenham line algorithm
-    private void DrawLine(Vector2f p0, Vector2f p1, Texture2D tx, Color c, int offset = 0)
-    {
-        int x0 = (int)p0.x;
-        int y0 = (int)p0.y;
-        int x1 = (int)p1.x;
-        int y1 = (int)p1.y;
-
-        int dx = Mathf.Abs(x1 - x0);
-        int dy = Mathf.Abs(y1 - y0);
-        int sx = x0 < x1 ? 1 : -1;
-        int sy = y0 < y1 ? 1 : -1;
-        int err = dx - dy;
-
-        while (true)
-        {
-            tx.SetPixel(x0 + offset, y0 + offset, c);
-
-            if (x0 == x1 && y0 == y1) break;
-            int e2 = 2 * err;
-            if (e2 > -dy)
-            {
-                err -= dy;
-                x0 += sx;
-            }
-            if (e2 < dx)
-            {
-                err += dx;
-                y0 += sy;
-            }
         }
     }
 }

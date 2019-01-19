@@ -26,7 +26,7 @@ public class MeshGenerator : MonoBehaviour {
         if (rendered == false)
         {
             buttonSite = GetComponentInParent<VoronoiGeneration>().buttonSiteDictionary[name];
-            renderMesh();
+            RenderMesh();
             attachText();
             setColor();
             rendered = true;
@@ -35,7 +35,7 @@ public class MeshGenerator : MonoBehaviour {
         updateColor();
     }
 
-    private void renderMesh()
+    private void RenderMesh()
     {
         Rectf bounds = GetComponentInParent<VoronoiGeneration>().bounds;
 

@@ -132,7 +132,7 @@ public class KeyboardPressingLoggerClient
                 generateKeyboard.CoordinateToButton(coord, ButtonState.RELEASING);
             }
             string logWithTime = string.Format("{0}\t{1}", DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss-fff"), log);
-            generateKeyboard.printTextToFile(logWithTime);
+            generateKeyboard.PrintTextToFile(logWithTime);
         }
 
 

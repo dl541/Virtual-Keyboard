@@ -112,6 +112,24 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &56559779 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1693678500019592, guid: f7ae6aa9ae837d248a6143560124dfd1,
+    type: 3}
+  m_PrefabInstance: {fileID: 1933405821}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &56559784
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 56559779}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59af0577b7adc9447b273a31d3b308f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &212243922
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -519,7 +537,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1113733941553270, guid: f7ae6aa9ae837d248a6143560124dfd1, type: 3}
       propertyPath: m_Name
-      value: InputField
+      value: InputFieldPrefab
       objectReference: {fileID: 0}
     - target: {fileID: 224338570997454904, guid: f7ae6aa9ae837d248a6143560124dfd1,
         type: 3}
@@ -635,6 +653,10 @@ PrefabInstance:
         type: 3}
       propertyPath: m_inputSource
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1693678500019592, guid: f7ae6aa9ae837d248a6143560124dfd1, type: 3}
+      propertyPath: m_Name
+      value: InputField
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f7ae6aa9ae837d248a6143560124dfd1, type: 3}
