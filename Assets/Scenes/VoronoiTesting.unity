@@ -401,7 +401,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   customButtonPrefab: {fileID: 1261945147792506, guid: 7e665ec5143bbd841859d1d12f8fc6e8,
     type: 3}
-  polygonNumber: 26
+  adaptiveRate: 0.01
 --- !u!4 &1271253860
 Transform:
   m_ObjectHideFlags: 0
@@ -539,6 +539,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: InputFieldPrefab
       objectReference: {fileID: 0}
+    - target: {fileID: 1693678500019592, guid: f7ae6aa9ae837d248a6143560124dfd1, type: 3}
+      propertyPath: m_Name
+      value: InputField
+      objectReference: {fileID: 0}
     - target: {fileID: 224338570997454904, guid: f7ae6aa9ae837d248a6143560124dfd1,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -653,10 +657,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_inputSource
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1693678500019592, guid: f7ae6aa9ae837d248a6143560124dfd1, type: 3}
-      propertyPath: m_Name
-      value: InputField
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f7ae6aa9ae837d248a6143560124dfd1, type: 3}

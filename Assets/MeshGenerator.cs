@@ -6,11 +6,11 @@ using TMPro;
 
 public class MeshGenerator : MonoBehaviour {
     public GameObject buttonTextPrefab;
-    private GameObject buttonText;
+    public GameObject buttonText;
     public Site buttonSite;
     float width = 100;
     float height = 100;
-    bool rendered = false;
+    public bool rendered = false;
 
     private float maxColorValue = 0.9f;
     private float minColorValue = 0.5f;
@@ -18,6 +18,7 @@ public class MeshGenerator : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+        setColor();
     }
 
     // Update is called once per frame
@@ -28,7 +29,6 @@ public class MeshGenerator : MonoBehaviour {
             buttonSite = GetComponentInParent<VoronoiGeneration>().buttonSiteDictionary[name];
             RenderMesh();
             attachText();
-            setColor();
             rendered = true;
         }
 

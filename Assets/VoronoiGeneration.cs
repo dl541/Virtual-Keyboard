@@ -12,9 +12,6 @@ public class VoronoiGeneration : MonoBehaviour {
     public GameObject customButtonPrefab;
     public Dictionary<string, Site> buttonSiteDictionary = new Dictionary<string, Site>();
 
-    // The number of polygons/sites we want
-    public int polygonNumber = 26;
-
     //Resolution of phone
     private Vector2 screenSize = new Vector2(1920f, 1020f);
     private float widthPortion = 1f;
@@ -41,8 +38,11 @@ public class VoronoiGeneration : MonoBehaviour {
     private float horizontalMargin;
     private float verticalMargin;
 
+    // Parameter for adaptive rate
+    public float adaptiveRate = 0.01f;
     // Parameters for Lloyd's relaxation
     private int numOfIterations = 15;
+
     //Path for printing logs
     private string path;
     private StreamWriter sw;
@@ -62,41 +62,7 @@ public class VoronoiGeneration : MonoBehaviour {
 
         points = GeneratePointsFromFile();
 
-        Voronoi voronoi = new Voronoi(points.Values.ToList(), bounds);
-
-        sites = voronoi.SitesIndexedByLocation;
-        Debug.Log("Number of sites " + sites.Count);
-
-        foreach (KeyValuePair<string, Vector2f> entry in points)
-        {
-            buttonSiteDictionary[entry.Key] = sites[entry.Value];
-        }
-/**
-        // Measure how far away the current positions are from the original positions
-        var positionDiffList = new SortedList<float, KeyValuePair<string, Site>>();
-        foreach (KeyValuePair<Vector2f, Site> entry in sites)
-        {
-            Vector2f sitePosition = entry.Key;
-            foreach (KeyValuePair<string, Vector2f> record in points)
-            {
-                Debug.Log(record.Key);
-                Vector2f originalPosition = record.Value;
-                Vector2f difference = originalPosition - sitePosition;
-                Debug.Log(difference);
-                positionDiffList.Add(difference.magnitude, new KeyValuePair<string, Site>(record.Key, entry.Value));
-            }
-        }
-
-        // Select combinations with the smallest difference
-        foreach (var entry in positionDiffList)
-        {
-            var charSitePair = entry.Value;
-            if (!buttonSiteDictionary.ContainsKey(charSitePair.Key) && !buttonSiteDictionary.ContainsValue(charSitePair.Value))
-            {
-                buttonSiteDictionary[charSitePair.Key] = charSitePair.Value;
-            }
-        }
-    **/
+        GenerateMesh();
     }
 
     void Start()
@@ -156,17 +122,37 @@ public class VoronoiGeneration : MonoBehaviour {
         GameObject closestButton = ClosestMeanSearcher(coord);
         closestButton.GetComponent<InitializeCollider>().buttonState = buttonState;
 
-        
+        UpdateMeanPosition(closestButton.name, new Vector2f(coord.x, coord.y));
+        GenerateMesh();
+    }
+
+    private void GenerateMesh()
+    {
+        Voronoi voronoi = new Voronoi(points.Values.ToList(), bounds);
+
+        sites = voronoi.SitesIndexedByLocation;
+        Debug.Log("Number of sites " + sites.Count);
+
+        foreach (KeyValuePair<string, Vector2f> entry in points)
+        {
+            buttonSiteDictionary[entry.Key] = sites[entry.Value];
+        }
+
+        foreach(GameObject button in buttonList)
+        {
+            button.GetComponent<MeshGenerator>().rendered = false;
+            Destroy(button.GetComponent<MeshFilter>().mesh);
+            Destroy(button.GetComponent<MeshGenerator>().buttonText);
+        }
     }
 
     private void UpdateMeanPosition(string key, Vector2f coord)
     {
-        float adaptiveRate = 0.01f;
         float deltaX = (coord.x - points[key].x) * adaptiveRate;
         float deltaY = (coord.y - points[key].y) * adaptiveRate;
         points[key] = points[key] + new Vector2f(deltaX, deltaY);
 
-        Debug.Log(string.Format("Key: {0}, Position: {1}", key, points[key]));
+        Debug.Log(string.Format("The position of Key {0} is updated to {1}", key, points[key]));
     }
 
     private GameObject ClosestMeanSearcher(Vector2 coord)
