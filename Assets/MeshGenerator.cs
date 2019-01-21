@@ -77,17 +77,12 @@ public class MeshGenerator : MonoBehaviour {
 
     private void setColor()
     {
-        if (gameObject.name == GetComponentInParent<VoronoiGeneration>().SpaceBarName)
-        {
-            gameObject.GetComponent<Renderer>().material.color = Color.gray;
-        }
-        else
-        {
-            int ascii = gameObject.name.ToCharArray()[0];
-            float hue = (ascii - 97) / 27f;
-            Color randomColor = Color.HSVToRGB(Random.value, Random.value, 0.9f);
-            gameObject.GetComponent<Renderer>().material.color = randomColor;
-        }
+
+        int ascii = gameObject.name.ToCharArray()[0];
+        float hue = (ascii - 97) / 27f;
+        Color randomColor = Color.HSVToRGB(Random.value, Random.value, 0.9f);
+        gameObject.GetComponent<Renderer>().material.color = randomColor;
+
     }
 
     private void updateColor()

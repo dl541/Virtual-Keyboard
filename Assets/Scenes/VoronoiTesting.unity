@@ -299,6 +299,12 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 1933405821}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &854992428 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1830462097053462, guid: ff52bb1bdf8bd5640b4a496356d65b64,
+    type: 3}
+  m_PrefabInstance: {fileID: 942956102}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &942956102
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -308,7 +314,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1830462097053462, guid: ff52bb1bdf8bd5640b4a496356d65b64, type: 3}
       propertyPath: m_Name
-      value: SpringButton
+      value: Spacebar
       objectReference: {fileID: 0}
     - target: {fileID: 224449058212506922, guid: ff52bb1bdf8bd5640b4a496356d65b64,
         type: 3}
@@ -659,6 +665,7 @@ MonoBehaviour:
   customButtonPrefab: {fileID: 1261945147792506, guid: 7e665ec5143bbd841859d1d12f8fc6e8,
     type: 3}
   adaptiveRate: 0.01
+  spaceBarButton: {fileID: 854992428}
 --- !u!4 &1271253860
 Transform:
   m_ObjectHideFlags: 0

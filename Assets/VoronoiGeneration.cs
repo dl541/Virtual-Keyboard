@@ -47,14 +47,7 @@ public class VoronoiGeneration : MonoBehaviour {
     private string path;
     private StreamWriter sw;
 
-    public string SpaceBarName
-    {
-        get
-        {
-            return spaceBarName;
-        }
-
-    }
+    public GameObject spaceBarButton;
 
     void Awake()
     {
@@ -119,11 +112,23 @@ public class VoronoiGeneration : MonoBehaviour {
 
     public void CoordinateToButton(Vector2 coord, ButtonState buttonState)
     {
-        GameObject closestButton = ClosestMeanSearcher(coord);
-        closestButton.GetComponent<InitializeCollider>().buttonState = buttonState;
+        // Offset the coordinates
+        coord = new Vector2(coord.x, coord.y - screenSize.y / 4);
+        Debug.Log(string.Format("Coordinate {0} pressed in Virtual Keyboard", coord));
 
-        UpdateMeanPosition(closestButton.name, new Vector2f(coord.x, coord.y));
-        GenerateMesh();
+        // Check if the user is pressing the spacebar
+        if (coord.y < 0)
+        {
+            spaceBarButton.GetComponent<InitializeCollider>().buttonState = buttonState;
+        }
+        else
+        {
+            GameObject closestButton = ClosestMeanSearcher(coord);
+            closestButton.GetComponent<InitializeCollider>().buttonState = buttonState;
+
+            UpdateMeanPosition(closestButton.name, new Vector2f(coord.x, coord.y));
+            GenerateMesh();
+        }
     }
 
     private void GenerateMesh()
