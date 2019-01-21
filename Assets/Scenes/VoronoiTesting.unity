@@ -314,7 +314,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1830462097053462, guid: ff52bb1bdf8bd5640b4a496356d65b64, type: 3}
       propertyPath: m_Name
-      value: Spacebar
+      value: ' '
       objectReference: {fileID: 0}
     - target: {fileID: 224449058212506922, guid: ff52bb1bdf8bd5640b4a496356d65b64,
         type: 3}
