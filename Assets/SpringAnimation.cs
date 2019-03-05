@@ -38,7 +38,6 @@ public class SpringAnimation : ButtonAnimation{
         else
         {
             //Move keyboard button
-            Debug.Log(string.Format("Parent is {0}", transform.parent.name));
             button.transform.localPosition += new Vector3(0f, 0f, maxDepth/maxFrameIndex * transform.parent.transform.localScale.x);
             frameIndex += 1;
         }
