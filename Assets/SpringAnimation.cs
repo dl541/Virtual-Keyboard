@@ -38,7 +38,8 @@ public class SpringAnimation : ButtonAnimation{
         else
         {
             //Move keyboard button
-            button.transform.position += new Vector3(0f, 0f, maxDepth/maxFrameIndex);
+            Debug.Log(string.Format("Parent is {0}", transform.parent.name));
+            button.transform.localPosition += new Vector3(0f, 0f, maxDepth/maxFrameIndex * transform.parent.transform.localScale.x);
             frameIndex += 1;
         }
 
@@ -46,7 +47,7 @@ public class SpringAnimation : ButtonAnimation{
 
     override public void releaseAnimation(GameObject button)
     {
-        button.transform.position = new Vector3(button.transform.position.x, button.transform.position.y, 0f);
+        button.transform.localPosition = new Vector3(button.transform.localPosition.x, button.transform.localPosition.y, 0f);
 
         var pointer = new PointerEventData(EventSystem.current);
         ExecuteEvents.Execute(button, pointer, ExecuteEvents.pointerUpHandler);
