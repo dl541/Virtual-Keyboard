@@ -13,6 +13,7 @@ public class GenerateKeyboard : MonoBehaviour
     private int numOfRows = 5;
     private float buttonSizeX;
     private float buttonSizeY;
+    private Vector3 buttonPrefabScale;
     private float buttonSpacingX;
     private float buttonSpacingY;
     private float spaceBarLengthInButton = 5f;
@@ -33,7 +34,7 @@ public class GenerateKeyboard : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-
+        buttonPrefabScale = buttonPrefab.GetComponent<RectTransform>().localScale;
         buttonSizeX = screenSize.x / 10;
         buttonSizeY = screenSize.y * 0.23f;
         buttonSpacingX = 0;
@@ -70,20 +71,20 @@ public class GenerateKeyboard : MonoBehaviour
 
         string[] firstRow = { "q", "w", "e", "r", "t", "y", "u", "i", "o", "p" };
         instantiateRow(firstRow, firstPosInRow + upperCorner);
-        firstPosInRow += new Vector3(0f, -buttonSizeY - buttonSpacingY, 0f);
-        firstPosInRow.x = screenSize.x * 0.05f;
+        firstPosInRow += new Vector3(0f, -buttonSizeY * buttonPrefabScale.y - buttonSpacingY, 0f);
+        firstPosInRow.x = screenSize.x * 0.05f * buttonPrefabScale.x;
         UpdateRowMap(firstRow);
 
         string[] secondRow = { "a", "s", "d", "f", "g", "h", "j", "k", "l" };
         instantiateRow(secondRow, firstPosInRow + upperCorner);
-        firstPosInRow += new Vector3(0f, -buttonSizeY - buttonSpacingY, 0f);
+        firstPosInRow += new Vector3(0f, -buttonSizeY * buttonPrefabScale.y - buttonSpacingY, 0f);
         firstPosInRow.x = 0;
         UpdateRowMap(secondRow);
 
         string[] thirdRow = { "Shift", "z", "x", "c", "v", "b", "n", "m", "<-" };
         instantiateRow(thirdRow, firstPosInRow + upperCorner);
-        firstPosInRow += new Vector3(0f, -buttonSizeY - buttonSpacingY, 0f);
-        firstPosInRow.x = screenSize.x * 0.25f;
+        firstPosInRow += new Vector3(0f, -buttonSizeY * buttonPrefabScale.y - buttonSpacingY, 0f);
+        firstPosInRow.x = screenSize.x * 0.25f * buttonPrefabScale.x;
         UpdateRowMap(thirdRow);
 
         string[] fourthRow = { spaceBarName };
@@ -104,19 +105,19 @@ public class GenerateKeyboard : MonoBehaviour
             if (character == spaceBarName)
             {
                 instantiateKey(character, pos, spaceBarLengthInButton);
-                pos.x += buttonSizeX * spaceBarLengthInButton + buttonSpacingX;
+                pos.x += buttonSizeX * spaceBarLengthInButton * buttonPrefabScale.x  + buttonSpacingX;
             }
 
             else if (character == "Shift" || character == "<-")
             {
                 instantiateKey(character, pos, 1.5f);
-                pos.x += buttonSizeX * 1.5f + buttonSpacingX;
+                pos.x += buttonSizeX * 1.5f * buttonPrefabScale.x + buttonSpacingX;
             }
 
             else
             {
                 instantiateKey(character, pos);
-                pos.x += buttonSizeX + buttonSpacingX;
+                pos.x += buttonSizeX * buttonPrefabScale.x + buttonSpacingX;
             }
         }
     }
