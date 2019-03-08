@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using System;
+using System.Threading;
 
 public class PrintMarkerLocations : MonoBehaviour
 {
@@ -12,6 +13,7 @@ public class PrintMarkerLocations : MonoBehaviour
     private StreamWriter sw;
     public OptitrackStreamingClient streamingClient;
     private int logIndex = 0;
+    private string line_;
 
     // Start is called before the first frame update
     void Start()
@@ -27,24 +29,24 @@ public class PrintMarkerLocations : MonoBehaviour
 
         foreach (OptitrackMarkerState markerState in markerStates)
         {
-            String log = string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}", DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss-fff"), 
+            String log = string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\n", DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss-fff"), 
                 logIndex, markerState.Id, markerState.Position.x, markerState.Position.y, markerState.Position.z);
 
             PrintTextToFile(log);
+            logIndex += 1;
         }
     }
 
     public void PrintTextToFile(string text)
     {
-        if (sw == null)
-        {
-            Debug.Log(String.Format("Printing logs to {0}", path));
-        }
-        sw = new StreamWriter(path, true);
-        Debug.Log("Print logs to file");
-        sw.WriteLine(text);
-        sw.Close();
+        line_ = text;
 
-        logIndex += 1;
+        var thread = new Thread(WriteOnSeparateThread);
+        thread.Start();
+    }
+
+    private void WriteOnSeparateThread()
+    {
+        File.AppendAllText(path, line_);
     }
 }
