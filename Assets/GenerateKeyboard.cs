@@ -133,7 +133,7 @@ public class GenerateKeyboard : MonoBehaviour
 
         GameObject text = newButton.transform.Find("TextMeshPro Text").gameObject;
         TextMeshProUGUI textMesh = text.GetComponent<TextMeshProUGUI>();
-        textMesh.fontSize = 48f;
+        textMesh.fontSize = 108f;
         textMesh.SetText(character);
 
         nameKeyMap.Add(newButton.name, newButton);
