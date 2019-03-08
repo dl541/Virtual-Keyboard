@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class SpringAnimation : ButtonAnimation{
 
-    public static float maxDepth = 20f;
+    public static float maxDepth = 80f;
     private static int maxFrameIndex = 2;
     private int frameIndex = 0;
     private static InputFieldManager inputFieldManager;
@@ -46,24 +46,15 @@ public class SpringAnimation : ButtonAnimation{
 
     override public void releaseAnimation(GameObject button)
     {
-        button.transform.localPosition = new Vector3(button.transform.localPosition.x, button.transform.localPosition.y, 0f);
+        button.transform.localPosition -= new Vector3(0f, 0f, button.transform.localPosition.z);
 
         var pointer = new PointerEventData(EventSystem.current);
         ExecuteEvents.Execute(button, pointer, ExecuteEvents.pointerUpHandler);
         ExecuteEvents.Execute(button, pointer, ExecuteEvents.pointerExitHandler);
 
-        if (frameIndex >= maxFrameIndex)
-        {
-            button.GetComponent<InitializeCollider>().buttonState = ButtonState.RELEASED;
-            inputFieldManager.append(button.name);
-            frameIndex = 0;
-        }
-        else
-        {
-            //Move keyboard button
-            button.transform.position += new Vector3(0f, 0f, maxDepth / maxFrameIndex);
-            frameIndex += 1;
-        }
+        button.GetComponent<InitializeCollider>().buttonState = ButtonState.RELEASED;
+        inputFieldManager.append(button.name);
+        frameIndex = 0;
 
     }
 }
