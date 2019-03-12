@@ -14,6 +14,7 @@ public class PrintMarkerLocations : MonoBehaviour
     public OptitrackStreamingClient streamingClient;
     private int logIndex = 0;
     private string line_;
+    public GameObject boundingBox;
 
     // Start is called before the first frame update
     void Start()
@@ -22,18 +23,21 @@ public class PrintMarkerLocations : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
 
         List<OptitrackMarkerState> markerStates = streamingClient.GetLatestMarkerStates();
 
         foreach (OptitrackMarkerState markerState in markerStates)
         {
-            String log = string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\n", DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss-fff"), 
-                logIndex, markerState.Id, markerState.Position.x, markerState.Position.y, markerState.Position.z);
+            if (boundingBox.GetComponent<Collider>().bounds.Contains(markerState.Position))
+            {
+                String log = string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\n", DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss-fff"),
+                    logIndex, markerState.Id, markerState.Position.x, markerState.Position.y, markerState.Position.z);
 
-            PrintTextToFile(log);
-            logIndex += 1;
+                PrintTextToFile(log);
+                logIndex += 1;
+            }
         }
     }
 
