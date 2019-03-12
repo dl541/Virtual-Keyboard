@@ -244,8 +244,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 183859704}
   - {fileID: 516438304}
+  - {fileID: 183859704}
   m_Father: {fileID: 25981050}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -276,7 +276,7 @@ GameObject:
   - component: {fileID: 516438308}
   - component: {fileID: 516438309}
   m_Layer: 0
-  m_Name: Cube
+  m_Name: BoundingBox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -293,7 +293,7 @@ Transform:
   m_LocalScale: {x: 0.2611433, y: 0.18182169, z: 0.26930952}
   m_Children: []
   m_Father: {fileID: 191744002}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &516438305
 BoxCollider:
@@ -420,7 +420,7 @@ Prefab:
     - target: {fileID: 224569691768565524, guid: 4c92e7b933e547d4b9baec94b3cbeacb,
         type: 2}
       propertyPath: m_RootOrder
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 224569691768565524, guid: 4c92e7b933e547d4b9baec94b3cbeacb,
         type: 2}
@@ -510,7 +510,7 @@ Prefab:
     - target: {fileID: 224956454753200818, guid: 4c92e7b933e547d4b9baec94b3cbeacb,
         type: 2}
       propertyPath: m_LocalPosition.z
-      value: 1.5462e-11
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 224956454753200818, guid: 4c92e7b933e547d4b9baec94b3cbeacb,
         type: 2}
@@ -520,7 +520,7 @@ Prefab:
     - target: {fileID: 224956454753200818, guid: 4c92e7b933e547d4b9baec94b3cbeacb,
         type: 2}
       propertyPath: m_AnchoredPosition.x
-      value: -584.76
+      value: -585
       objectReference: {fileID: 0}
     - target: {fileID: 224956454753200818, guid: 4c92e7b933e547d4b9baec94b3cbeacb,
         type: 2}
@@ -530,7 +530,7 @@ Prefab:
     - target: {fileID: 224956454753200818, guid: 4c92e7b933e547d4b9baec94b3cbeacb,
         type: 2}
       propertyPath: m_AnchoredPosition.y
-      value: 277.56
+      value: 711
       objectReference: {fileID: 0}
     - target: {fileID: 114581547328893776, guid: 4c92e7b933e547d4b9baec94b3cbeacb,
         type: 2}
@@ -628,6 +628,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   streamingClient: {fileID: 1837358626}
+  boundingBox: {fileID: 516438303}
 --- !u!114 &1837358626 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 11408904, guid: 9a32d482689653847b22155fb3096f79,
