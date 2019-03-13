@@ -629,6 +629,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   streamingClient: {fileID: 1837358626}
   boundingBox: {fileID: 516438303}
+  logBufferSize: 2500000
 --- !u!114 &1837358626 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 11408904, guid: 9a32d482689653847b22155fb3096f79,
