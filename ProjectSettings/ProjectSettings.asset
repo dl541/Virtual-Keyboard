@@ -649,7 +649,7 @@ PlayerSettings:
   cloudServicesEnabled:
     UNet: 1
   facebookSdkVersion: 7.9.4
-  apiCompatibilityLevel: 2
+  apiCompatibilityLevel: 3
   cloudProjectId: 1031c4d6-d499-4d8b-9357-b3dbbd23ce0b
   projectName: Virtual keyboard
   organizationId: davelei97mathsg
