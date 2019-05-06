@@ -25,7 +25,7 @@ public class InitializeCollider : MonoBehaviour
     }
 
     // Update is called once per frame
-    void FixedUpdate()
+    void Update()
     {
         switch (buttonState)
         {
