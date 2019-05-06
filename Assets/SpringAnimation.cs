@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class SpringAnimation : ButtonAnimation{
 
     public static float maxDepth = 80f;
-    private static int maxFrameIndex = 2;
+    private static int maxFrameIndex = 1;
     private int frameIndex = 0;
     private static InputFieldManager inputFieldManager;
     private static string inputFieldName = "InputField";

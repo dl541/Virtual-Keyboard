@@ -6,35 +6,92 @@ using System.Linq;
 using TensorFlow;
 using UnityEngine;
 
-// TODO: working on gettestvectorsandtimestamp, need to test for generatefeatures and thumbstaterecorder
+
+
 public class KeypressChecker : MonoBehaviour {
 
+    enum Hand { LEFT, RIGHT }
+    private GameObject keyboardBase;
+    private Matrix4x4 keyboardBaseTransform;
     private TFGraph leftNNGraph;
     private TFGraph rightNNGraph;
     private TFSession leftNNSession;
     private TFSession rightNNSession;
-    public GameObject topLeftMarker;
-    public GameObject topRightMarker;
-    public GameObject sideLeftMarker;
+    public GameObject leftTipMarker;
+    public GameObject leftMidMarker;
+    public GameObject leftEndMarker;
+    public GameObject rightTipMarker;
     private ThumbStateRecorder leftThumbRecorder = new ThumbStateRecorder();
     private ThumbStateRecorder rightThumbRecorder = new ThumbStateRecorder();
 
 	// Use this for initialization
 	void Start () {
+        keyboardBase = GameObject.Find("KeyboardBase");
+        InitialiseTransformMatrix();
         leftNNGraph = new TFGraph();
         leftNNGraph.Import(File.ReadAllBytes("Assets/tf_NN_focal_clf_left.pb"));
         leftNNSession = new TFSession(leftNNGraph);
     }
 
+    void InitialiseTransformMatrix()
+    {
+        Matrix4x4 translationMatrix = Matrix4x4.TRS(-keyboardBase.transform.position, Quaternion.identity, Vector3.one);
+        Debug.Log(string.Format("Translation: {0}", translationMatrix));
+        Matrix4x4 rotationMatrix = Matrix4x4.TRS(Vector3.zero, keyboardBase.transform.rotation, Vector3.one).inverse;
+        Matrix4x4 screenCoordinateMatrix = new Matrix4x4();
+        screenCoordinateMatrix.SetColumn(0, rotationMatrix.GetColumn(0));
+        screenCoordinateMatrix.SetColumn(1, rotationMatrix.GetColumn(2));
+        screenCoordinateMatrix.SetColumn(2, -rotationMatrix.GetColumn(1));
+        keyboardBaseTransform = screenCoordinateMatrix * translationMatrix;
+        //keyboardBaseTransform =  Matrix4x4.TRS(translationVector, Quaternion.identity, Vector3.one);
+        //Debug.Log(string.Format("Transform: {0}", keyboardBaseTransform));
+    }
+
     private void Update()
     {
-        Vector3[] tipPosArray;
-        DateTime[] dateTimeArray;
+        if (leftTipMarker != null && leftMidMarker != null && leftEndMarker != null)
+        {
+            bool leftKeypress = IsLeftKeypress(leftTipMarker.transform.position, leftMidMarker.transform.position, leftEndMarker.transform.position, DateTime.Now);
+            Debug.Log(string.Format("Left keypress: {0}", leftKeypress));
+            InitiateButtonAnimation(Hand.LEFT, leftKeypress);
+        }
+    }
 
-        GetTestPosVectorsAndTimestamps(out tipPosArray, out dateTimeArray);
+    private void InitiateButtonAnimation(Hand hand, bool isKeypress)
+    {
+        GameObject tipMarker = hand == Hand.LEFT ? leftTipMarker : rightTipMarker;
 
-        Debug.Log(IsLeftKeypress(tipPosArray[0], Vector3.zero, Vector3.zero, dateTimeArray[0]));
-        Debug.Log(IsLeftKeypress(tipPosArray[1], Vector3.zero, Vector3.zero, dateTimeArray[1]));
+        // Search for the button closest to the tip marker
+        var buttonList = keyboardBase.GetComponent<GenerateKeyboard>().buttonList;
+        var minDistance = float.PositiveInfinity;
+        GameObject closestButton = buttonList[0];
+        foreach (GameObject button in buttonList)
+        {
+            Vector2 buttonSize = button.GetComponent<RectTransform>().sizeDelta;
+            Vector2 buttonScale = button.GetComponentInParent<RectTransform>().lossyScale;
+            Vector3 buttonWorldSize = Vector3.Scale(buttonSize / 2, buttonScale);
+            Vector3 buttonWorldPosition = button.transform.position + Vector3.Scale(buttonWorldSize, new Vector3(1f, -1f));
+            var distance = (buttonWorldPosition - tipMarker.transform.position).magnitude;
+
+            if (distance < minDistance)
+            {
+                closestButton = button;
+                minDistance = distance;
+            }
+        }
+
+        // If the button state has changed, initiate the animation sequence
+        var currentState = closestButton.GetComponent<InitializeCollider>().buttonState;
+        Debug.Log(string.Format("closest button: {0}", closestButton.name));
+        Debug.Log(string.Format("closest button pos: {0}", closestButton.transform.position.ToString("F7")));
+        if (currentState == ButtonState.PRESSED && isKeypress == false)
+        {
+            closestButton.GetComponent<InitializeCollider>().buttonState = ButtonState.RELEASING;
+        }
+        else if (currentState == ButtonState.RELEASED && isKeypress == true)
+        {
+            closestButton.GetComponent<InitializeCollider>().buttonState = ButtonState.PRESSING;
+        }
     }
 
     public bool IsRightKeypress(Vector3 tipPos, Vector3 midPos, Vector3 endPos, DateTime timestamp)
@@ -50,16 +107,10 @@ public class KeypressChecker : MonoBehaviour {
 
     public bool IsLeftKeypress(Vector3 tipPos, Vector3 midPos, Vector3 endPos, DateTime timestamp)
     {
-        if (topLeftMarker == null || topRightMarker == null || sideLeftMarker == null)
-        {
-            return false;
-        }
 
-        Matrix4x4 transformMatrix = FindTransformMatrix(topLeftMarker.transform.position, topRightMarker.transform.position, sideLeftMarker.transform.position);
-
-        float[][] features = GenerateFeatures(transformMatrix.MultiplyPoint3x4(tipPos), 
-            transformMatrix.MultiplyPoint3x4(midPos), 
-            transformMatrix.MultiplyPoint3x4(endPos), 
+        float[][] features = GenerateFeatures(keyboardBaseTransform.MultiplyPoint3x4(tipPos), 
+            keyboardBaseTransform.MultiplyPoint3x4(midPos), 
+            keyboardBaseTransform.MultiplyPoint3x4(endPos), 
             timestamp, leftThumbRecorder);
 
         if (features == null)
@@ -71,6 +122,7 @@ public class KeypressChecker : MonoBehaviour {
 
     private float[][] GenerateFeatures(Vector3 tipPos, Vector3 midPos, Vector3 endPos, DateTime timestamp, ThumbStateRecorder thumbStateRecorder)
     {
+        Debug.Log(string.Format("Tip pos: {0}", tipPos.ToString("F7")));
         Vector3[] velocities = thumbStateRecorder.FindVelocityAndUpdate(tipPos, midPos, endPos, timestamp);
 
         if (velocities == null||velocities.Length == 0)

@@ -20,7 +20,7 @@ public class GenerateKeyboard : MonoBehaviour
     private string spaceBarName = " ";
     private float horizontalMargin;
     private float verticalMargin;
-    private List<GameObject> buttonList = new List<GameObject>();
+    public List<GameObject> buttonList = new List<GameObject>();
     public Dictionary<string, GameObject> nameKeyMap = new Dictionary<string, GameObject>();
     public Dictionary<float, string[]> posToRowMap = new Dictionary<float, string[]>();
 

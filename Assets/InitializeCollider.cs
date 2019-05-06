@@ -9,7 +9,7 @@ public enum AnimationType {SPRING, BALLOON}
 
 public class InitializeCollider : MonoBehaviour
 {
-    private float colliderDepth = 200f;
+    private float colliderDepth = 10f;
     private static InputFieldManager inputFieldManager;
     private static string inputFieldName = "InputField";
     public ButtonState buttonState = ButtonState.RELEASED;
@@ -20,7 +20,7 @@ public class InitializeCollider : MonoBehaviour
     void Start()
     {
         inputFieldManager = GameObject.Find(inputFieldName).GetComponent<InputFieldManager>();
-        //generateCollider();
+        generateCollider();
         setAnimationScript();
     }
 
@@ -44,15 +44,15 @@ public class InitializeCollider : MonoBehaviour
         }
     }
 
-    //private void generateCollider()
-    //{
-    //    BoxCollider boxCollider = gameObject.AddComponent<BoxCollider>();
+    private void generateCollider()
+    {
+        BoxCollider boxCollider = gameObject.AddComponent<BoxCollider>();
 
-    //    Vector2 size = gameObject.GetComponent<RectTransform>().sizeDelta;
-    //    boxCollider.center = new Vector3(size.x / 2, -size.y / 2, colliderDepth / 2);
-    //    boxCollider.size = new Vector3(size.x, size.y, colliderDepth);
-    //    boxCollider.isTrigger = true;
-    //}
+        Vector2 size = gameObject.GetComponent<RectTransform>().sizeDelta;
+        boxCollider.center = new Vector3(size.x / 2, -size.y / 2, 0f);
+        boxCollider.size = new Vector3(size.x, size.y, colliderDepth);
+        boxCollider.isTrigger = true;
+    }
 
     //void OnTriggerEnter(Collider other)
     //{
