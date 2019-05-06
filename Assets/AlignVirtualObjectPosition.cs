@@ -44,10 +44,10 @@ public class AlignVirtualObjectPosition : MonoBehaviour
             gameObject.transform.SetPositionAndRotation(rigidBodyState.Pose.Position, rigidBodyState.Pose.Orientation);
 
 
-            sw = new StreamWriter(path, true);
-            Debug.Log("Print rigid body position to file");
-            sw.WriteLine(string.Format("{0}\t{1}", rigidBodyState.Pose.Position, rigidBodyState.Pose.Orientation));
-            sw.Close();
+            //sw = new StreamWriter(path, true);
+            //Debug.Log("Print rigid body position to file");
+            //sw.WriteLine(string.Format("{0}\t{1}", rigidBodyState.Pose.Position, rigidBodyState.Pose.Orientation));
+            //sw.Close();
         }
     }
 }
