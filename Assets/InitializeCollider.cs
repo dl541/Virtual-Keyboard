@@ -9,7 +9,7 @@ public enum AnimationType {SPRING, BALLOON}
 
 public class InitializeCollider : MonoBehaviour
 {
-    private float colliderDepth = 10f;
+    private float colliderDepth = 1000f;
     private static InputFieldManager inputFieldManager;
     private static string inputFieldName = "InputField";
     public ButtonState buttonState = ButtonState.RELEASED;
@@ -20,8 +20,8 @@ public class InitializeCollider : MonoBehaviour
     void Start()
     {
         inputFieldManager = GameObject.Find(inputFieldName).GetComponent<InputFieldManager>();
-        generateCollider();
-        setAnimationScript();
+        GenerateCollider();
+        SetAnimationScript();
     }
 
     // Update is called once per frame
@@ -60,33 +60,21 @@ public class InitializeCollider : MonoBehaviour
         }
     }
 
-    private void generateCollider()
+    private void GenerateCollider()
     {
         BoxCollider boxCollider = gameObject.AddComponent<BoxCollider>();
-
         Vector2 size = gameObject.GetComponent<RectTransform>().sizeDelta;
         boxCollider.center = new Vector3(size.x / 2, -size.y / 2, 0f);
         boxCollider.size = new Vector3(size.x, size.y, colliderDepth);
         boxCollider.isTrigger = true;
     }
 
-    //void OnTriggerEnter(Collider other)
-    //{
-    //    buttonState = ButtonState.PRESSING;
-    //}
+    private void OnTriggerExit(Collider other)
+    {
+        ReleaseButton();
+    }
 
-    //void OnTriggerStay(Collider other)
-    //{
-    //    Debug.Log(string.Format("{0} is being pressed", gameObject.name));
-
-    //}
-
-    //void OnTriggerExit(Collider other)
-    //{
-    //    buttonState = ButtonState.RELEASING;
-    //}
-
-    void setAnimationScript()
+    void SetAnimationScript()
     {
         switch (animationType)
         {

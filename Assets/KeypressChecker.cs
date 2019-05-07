@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using TensorFlow;
 using UnityEngine;
 
@@ -23,9 +24,12 @@ public class KeypressChecker : MonoBehaviour {
     public GameObject rightTipMarker;
     private ThumbStateRecorder leftThumbRecorder = new ThumbStateRecorder();
     private ThumbStateRecorder rightThumbRecorder = new ThumbStateRecorder();
-
-	// Use this for initialization
-	void Start () {
+    private string[] NNResultLogs = new string[250000];
+    private int logIndex = 0;
+    private string path = string.Format("{0}_NN_output.txt", DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss-fff"));
+    
+    // Use this for initialization
+    void Start () {
         keyboardBase = GameObject.Find("KeyboardBase");
         InitialiseTransformMatrix();
         leftNNGraph = new TFGraph();
@@ -53,7 +57,9 @@ public class KeypressChecker : MonoBehaviour {
         {
             bool leftKeypress = IsLeftKeypress(leftTipMarker.transform.position, leftMidMarker.transform.position, leftEndMarker.transform.position, DateTime.Now);
             Debug.Log(string.Format("Left keypress: {0}", leftKeypress));
-            InitiateButtonAnimation(Hand.LEFT, leftKeypress);
+
+            bool majorityVote = leftThumbRecorder.UpdateAndVote(leftKeypress);
+            InitiateButtonAnimation(Hand.LEFT, majorityVote);
         }
     }
 
@@ -169,6 +175,9 @@ public class KeypressChecker : MonoBehaviour {
         // Fetch the results from output:
         Debug.Log(string.Format("Left hand NN output: {0}", prob[0, 0]));
 
+        string log = string.Format("{0}\t{1}", DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss-fff"), prob[0, 0]);
+        WriteToBuffer(log);
+        logIndex += 1;
         return prob[0,0] >= 0.5; 
     }
     private float[][] GenerateRandomFeatures()
@@ -246,6 +255,31 @@ public class KeypressChecker : MonoBehaviour {
 
         return transformMatrix;
     }
+
+    public void WriteToBuffer(string text)
+    {
+        var thread = new Thread(() => WriteOnSeparateThread(logIndex, text));
+        thread.Start();
+    }
+
+    private void WriteOnSeparateThread(int logIndex, string logMessage)
+    {
+        NNResultLogs[logIndex] = logMessage;
+    }
+
+    private void ExportToFile()
+    {
+        using (TextWriter tw = new StreamWriter(path))
+        {
+            foreach (String s in NNResultLogs)
+                tw.WriteLine(s);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        ExportToFile();
+    }
 }
 
 public class ThumbStateRecorder
@@ -254,6 +288,17 @@ public class ThumbStateRecorder
     private Vector3 prevTipPos;
     private Vector3 prevMidPos;
     private Vector3 prevEndPos;
+    private List<bool> isKeypressHistory = new List<bool>();
+    private int isKeypressCount = 0;
+    private int keyPressHistoryLength = 5;
+
+    public ThumbStateRecorder()
+    {
+        for (int index = 0; index < keyPressHistoryLength; index++)
+        {
+            isKeypressHistory.Add(false);
+        }
+    }
 
     public Vector3[] FindVelocityAndUpdate(Vector3 tipPos, Vector3 midPos, Vector3 endPos, DateTime currentTimestamp)
     {
@@ -275,5 +320,16 @@ public class ThumbStateRecorder
         prevMidPos = midPos;
         prevEndPos = endPos;
         return velocities;
+    }
+
+    public bool UpdateAndVote(bool isKeypress)
+    {
+        int newVote = isKeypress ? 1 : 0;
+        int oldestVote = isKeypressHistory[0] ? 1 : 0;
+        isKeypressCount += newVote - oldestVote;
+
+        isKeypressHistory.RemoveAt(0);
+        isKeypressHistory.Add(isKeypress);
+        return isKeypressCount * 2 >= keyPressHistoryLength;
     }
 }
