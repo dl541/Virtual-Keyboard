@@ -4,56 +4,56 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class SpringAnimation : ButtonAnimation{
+public class SpringAnimation : MonoBehaviour{
 
     public static float maxDepth = 80f;
-    private static int maxFrameIndex = 1;
+    private int maxFrameIndex = 1;
     private int frameIndex = 0;
-    private static InputFieldManager inputFieldManager;
-    private static string inputFieldName = "InputField";
+    private InputFieldManager inputFieldManager;
+    private string inputFieldName = "InputField";
 
     private void Start()
     {
         inputFieldManager = GameObject.Find(inputFieldName).GetComponent<InputFieldManager>();
     }
 
-    override public void pressAnimation(GameObject button)
+    public void pressAnimation()
     {
         //Render this button first, but after the panel
-        button.transform.SetSiblingIndex(1);
+        gameObject.transform.SetSiblingIndex(1);
 
         //Shading
         var pointer = new PointerEventData(EventSystem.current);
-        ExecuteEvents.Execute(button, pointer, ExecuteEvents.pointerEnterHandler);
-        ExecuteEvents.Execute(button, pointer, ExecuteEvents.pointerDownHandler);
+        ExecuteEvents.Execute(gameObject, pointer, ExecuteEvents.pointerEnterHandler);
+        ExecuteEvents.Execute(gameObject, pointer, ExecuteEvents.pointerDownHandler);
 
         //Play audio
         //playAudio();
 
         if (frameIndex >= maxFrameIndex)
         {
-            button.GetComponent<InitializeCollider>().buttonState = ButtonState.PRESSED;
+            gameObject.GetComponent<InitializeCollider>().buttonState = ButtonState.PRESSED;
             frameIndex = 0;
         }
         else
         {
             //Move keyboard button
-            button.transform.localPosition += new Vector3(0f, 0f, maxDepth/maxFrameIndex * transform.parent.transform.localScale.x);
+           // gameObject.transform.localPosition += new Vector3(0f, 0f, maxDepth);
             frameIndex += 1;
         }
 
     }
 
-    override public void releaseAnimation(GameObject button)
+    public void releaseAnimation()
     {
-        button.transform.localPosition -= new Vector3(0f, 0f, button.transform.localPosition.z);
+        //gameObject.transform.localPosition -= new Vector3(0f, 0f, -maxDepth);
 
         var pointer = new PointerEventData(EventSystem.current);
-        ExecuteEvents.Execute(button, pointer, ExecuteEvents.pointerUpHandler);
-        ExecuteEvents.Execute(button, pointer, ExecuteEvents.pointerExitHandler);
+        ExecuteEvents.Execute(gameObject, pointer, ExecuteEvents.pointerUpHandler);
+        ExecuteEvents.Execute(gameObject, pointer, ExecuteEvents.pointerExitHandler);
 
-        button.GetComponent<InitializeCollider>().buttonState = ButtonState.RELEASED;
-        inputFieldManager.append(button.name);
+        gameObject.GetComponent<InitializeCollider>().buttonState = ButtonState.RELEASED;
+        inputFieldManager.append(gameObject.name);
         frameIndex = 0;
 
     }

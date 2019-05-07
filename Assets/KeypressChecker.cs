@@ -9,7 +9,8 @@ using UnityEngine;
 
 
 
-public class KeypressChecker : MonoBehaviour {
+public class KeypressChecker : MonoBehaviour
+{
 
     enum Hand { LEFT, RIGHT }
     private GameObject keyboardBase;
@@ -22,19 +23,34 @@ public class KeypressChecker : MonoBehaviour {
     public GameObject leftMidMarker;
     public GameObject leftEndMarker;
     public GameObject rightTipMarker;
+    public GameObject rightMidMarker;
+    public GameObject rightEndMarker;
     private ThumbStateRecorder leftThumbRecorder = new ThumbStateRecorder();
     private ThumbStateRecorder rightThumbRecorder = new ThumbStateRecorder();
-    private string[] NNResultLogs = new string[250000];
+    private string[] NNResultLogs;
     private int logIndex = 0;
     private string path = string.Format("{0}_NN_output.txt", DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss-fff"));
-    
+    public bool enableNNLogs = false;
+
     // Use this for initialization
-    void Start () {
+    void Start()
+    {
+
+        if (enableNNLogs)
+        {
+            NNResultLogs = new string[250000];
+        }
+
         keyboardBase = GameObject.Find("KeyboardBase");
         InitialiseTransformMatrix();
+
         leftNNGraph = new TFGraph();
         leftNNGraph.Import(File.ReadAllBytes("Assets/tf_NN_focal_clf_left.pb"));
         leftNNSession = new TFSession(leftNNGraph);
+
+        rightNNGraph = new TFGraph();
+        rightNNGraph.Import(File.ReadAllBytes("Assets/tf_NN_focal_clf_right.pb"));
+        rightNNSession = new TFSession(rightNNGraph);
     }
 
     void InitialiseTransformMatrix()
@@ -51,8 +67,17 @@ public class KeypressChecker : MonoBehaviour {
         //Debug.Log(string.Format("Transform: {0}", keyboardBaseTransform));
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
+        if (rightTipMarker != null && rightMidMarker != null && rightEndMarker != null)
+        {
+            bool rightKeypress = IsRightKeypress(rightTipMarker.transform.position, rightMidMarker.transform.position, rightEndMarker.transform.position, DateTime.Now);
+            Debug.Log(string.Format("Right keypress: {0}", rightKeypress));
+
+            bool majorityVote = rightThumbRecorder.UpdateAndVote(rightKeypress);
+            InitiateButtonAnimation(Hand.RIGHT, majorityVote);
+        }
+
         if (leftTipMarker != null && leftMidMarker != null && leftEndMarker != null)
         {
             bool leftKeypress = IsLeftKeypress(leftTipMarker.transform.position, leftMidMarker.transform.position, leftEndMarker.transform.position, DateTime.Now);
@@ -61,6 +86,8 @@ public class KeypressChecker : MonoBehaviour {
             bool majorityVote = leftThumbRecorder.UpdateAndVote(leftKeypress);
             InitiateButtonAnimation(Hand.LEFT, majorityVote);
         }
+
+
     }
 
     private void InitiateButtonAnimation(Hand hand, bool isKeypress)
@@ -87,9 +114,9 @@ public class KeypressChecker : MonoBehaviour {
         }
 
         var currentState = closestButton.GetComponent<InitializeCollider>().buttonState;
-        Debug.Log(string.Format("closest button: {0}", closestButton.name));
-        Debug.Log(string.Format("closest button pos: {0}", closestButton.transform.position.ToString("F7")));
-        
+        Debug.Log(string.Format("closest button: {0}, hand: {1}", closestButton.name, hand));
+        Debug.Log(string.Format("closest button pos: {0}, hand: {1}", closestButton.transform.position.ToString("F7"), hand));
+
         if (isKeypress)
         {
             closestButton.GetComponent<InitializeCollider>().PressButton();
@@ -102,28 +129,32 @@ public class KeypressChecker : MonoBehaviour {
 
     public bool IsRightKeypress(Vector3 tipPos, Vector3 midPos, Vector3 endPos, DateTime timestamp)
     {
-        float[][] features = GenerateFeatures(tipPos, midPos, endPos, timestamp, rightThumbRecorder);
+        float[][] features = GenerateFeatures(keyboardBaseTransform.MultiplyPoint3x4(tipPos),
+            keyboardBaseTransform.MultiplyPoint3x4(midPos),
+            keyboardBaseTransform.MultiplyPoint3x4(endPos),
+            timestamp, rightThumbRecorder);
 
         if (features == null)
         {
             return false;
         }
-        return RunNN(features, rightNNSession);
+
+        return RunRightNN(features, rightNNSession);
     }
 
     public bool IsLeftKeypress(Vector3 tipPos, Vector3 midPos, Vector3 endPos, DateTime timestamp)
     {
 
-        float[][] features = GenerateFeatures(keyboardBaseTransform.MultiplyPoint3x4(tipPos), 
-            keyboardBaseTransform.MultiplyPoint3x4(midPos), 
-            keyboardBaseTransform.MultiplyPoint3x4(endPos), 
+        float[][] features = GenerateFeatures(keyboardBaseTransform.MultiplyPoint3x4(tipPos),
+            keyboardBaseTransform.MultiplyPoint3x4(midPos),
+            keyboardBaseTransform.MultiplyPoint3x4(endPos),
             timestamp, leftThumbRecorder);
 
         if (features == null)
         {
             return false;
         }
-        return RunNN(features, leftNNSession);
+        return RunLeftNN(features, leftNNSession);
     }
 
     private float[][] GenerateFeatures(Vector3 tipPos, Vector3 midPos, Vector3 endPos, DateTime timestamp, ThumbStateRecorder thumbStateRecorder)
@@ -131,7 +162,7 @@ public class KeypressChecker : MonoBehaviour {
         Debug.Log(string.Format("Tip pos: {0}", tipPos.ToString("F7")));
         Vector3[] velocities = thumbStateRecorder.FindVelocityAndUpdate(tipPos, midPos, endPos, timestamp);
 
-        if (velocities == null||velocities.Length == 0)
+        if (velocities == null || velocities.Length == 0)
         {
             Debug.Log("Feature array is null");
             return null;
@@ -142,10 +173,10 @@ public class KeypressChecker : MonoBehaviour {
         int insertIndex = 0;
 
         // Flatten arrays
-        foreach(Vector3 vector in positions)
+        foreach (Vector3 vector in positions)
         {
             features[insertIndex] = vector.x;
-            features[insertIndex+1] = vector.y;
+            features[insertIndex + 1] = vector.y;
             features[insertIndex + 2] = vector.z;
             insertIndex += 3;
         }
@@ -161,7 +192,7 @@ public class KeypressChecker : MonoBehaviour {
         return new float[][] { features };
     }
 
-    private bool RunNN(float[][] features, TFSession NNSession)
+    private bool RunLeftNN(float[][] features, TFSession NNSession)
     {
         var runner = NNSession.GetRunner();
         var tensor = new TFTensor(features);
@@ -175,10 +206,36 @@ public class KeypressChecker : MonoBehaviour {
         // Fetch the results from output:
         Debug.Log(string.Format("Left hand NN output: {0}", prob[0, 0]));
 
-        string log = string.Format("{0}\t{1}", DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss-fff"), prob[0, 0]);
-        WriteToBuffer(log);
-        logIndex += 1;
-        return prob[0,0] >= 0.5; 
+        if (enableNNLogs)
+        {
+            string log = string.Format("{0}\t{1}\t{2}", DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss-fff"), prob[0, 0], "l");
+            WriteToBuffer(log);
+            logIndex += 1;
+        }
+        return prob[0, 0] >= 0.5;
+    }
+
+    private bool RunRightNN(float[][] features, TFSession NNSession)
+    {
+        var runner = NNSession.GetRunner();
+        var tensor = new TFTensor(features);
+
+        runner.AddInput(rightNNGraph["dense_input"][0], tensor);
+        runner.Fetch(rightNNGraph["dense_1/Sigmoid"][0]);
+
+        var output = runner.Run();
+        var result = output[0];
+        var prob = (float[,])result.GetValue(jagged: false);
+        // Fetch the results from output:
+        Debug.Log(string.Format("Right hand NN output: {0}", prob[0, 0]));
+
+        if (enableNNLogs)
+        {
+            string log = string.Format("{0}\t{1}\t{2}", DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss-fff"), prob[0, 0], "r");
+            WriteToBuffer(log);
+            logIndex += 1;
+        }
+        return prob[0, 0] >= 0.5;
     }
     private float[][] GenerateRandomFeatures()
     {
@@ -188,7 +245,7 @@ public class KeypressChecker : MonoBehaviour {
 
         for (int i = 0; i < 18; i++)
         {
-            rtnlist[i] = rand.Next()/10;
+            rtnlist[i] = rand.Next() / 10;
         }
         return new float[][] { rtnlist };
     }
@@ -278,7 +335,10 @@ public class KeypressChecker : MonoBehaviour {
 
     private void OnDestroy()
     {
-        ExportToFile();
+        if (enableNNLogs)
+        {
+            ExportToFile();
+        }
     }
 }
 
@@ -305,14 +365,14 @@ public class ThumbStateRecorder
 
 
         var velocities = new Vector3[] { };
-        if (prevTimestamp!= null)
+        if (prevTimestamp != null)
         {
             double timeDiff = (currentTimestamp - prevTimestamp.Value).TotalSeconds;
             Vector3 tipVelocity = (tipPos - prevTipPos) / (float)timeDiff;
             Vector3 midVelocity = (midPos - prevMidPos) / (float)timeDiff;
             Vector3 endVelocity = (endPos - prevEndPos) / (float)timeDiff;
             Debug.Log(string.Format("Tip velocity: {0}", tipVelocity.ToString("F7")));
-            velocities = new Vector3[]{ tipVelocity, midVelocity, endVelocity};
+            velocities = new Vector3[] { tipVelocity, midVelocity, endVelocity };
         }
 
         prevTimestamp = currentTimestamp;

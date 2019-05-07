@@ -9,11 +9,11 @@ public enum AnimationType {SPRING, BALLOON}
 
 public class InitializeCollider : MonoBehaviour
 {
-    private float colliderDepth = 1000f;
+    private float colliderDepth = 10000f;
     private static InputFieldManager inputFieldManager;
     private static string inputFieldName = "InputField";
     public ButtonState buttonState = ButtonState.RELEASED;
-    private ButtonAnimation animationScript;
+    private SpringAnimation animationScript;
     public AnimationType animationType;
 
     // Use this for initialization
@@ -31,12 +31,12 @@ public class InitializeCollider : MonoBehaviour
         {
             case (ButtonState.PRESSING):
                 Debug.Log(string.Format("{0} is pressed", gameObject.name));
-                animationScript.pressAnimation(gameObject);
+                animationScript.pressAnimation();
                 break;
 
             case (ButtonState.RELEASING):
                 Debug.Log(string.Format("{0} released", gameObject.name));
-                animationScript.releaseAnimation(gameObject);
+                animationScript.releaseAnimation();
                 break;
 
             default:
@@ -79,7 +79,6 @@ public class InitializeCollider : MonoBehaviour
         switch (animationType)
         {
             case (AnimationType.BALLOON):
-                animationScript = gameObject.AddComponent<BalloonAnimation>();
                 break;
 
             case (AnimationType.SPRING):
