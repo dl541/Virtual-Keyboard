@@ -47,7 +47,7 @@ public class KeypressChecker : MonoBehaviour {
         //Debug.Log(string.Format("Transform: {0}", keyboardBaseTransform));
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         if (leftTipMarker != null && leftMidMarker != null && leftEndMarker != null)
         {
@@ -80,17 +80,17 @@ public class KeypressChecker : MonoBehaviour {
             }
         }
 
-        // If the button state has changed, initiate the animation sequence
         var currentState = closestButton.GetComponent<InitializeCollider>().buttonState;
         Debug.Log(string.Format("closest button: {0}", closestButton.name));
         Debug.Log(string.Format("closest button pos: {0}", closestButton.transform.position.ToString("F7")));
-        if (currentState == ButtonState.PRESSED && isKeypress == false)
+        
+        if (isKeypress)
         {
-            closestButton.GetComponent<InitializeCollider>().buttonState = ButtonState.RELEASING;
+            closestButton.GetComponent<InitializeCollider>().PressButton();
         }
-        else if (currentState == ButtonState.RELEASED && isKeypress == true)
+        else
         {
-            closestButton.GetComponent<InitializeCollider>().buttonState = ButtonState.PRESSING;
+            closestButton.GetComponent<InitializeCollider>().ReleaseButton();
         }
     }
 

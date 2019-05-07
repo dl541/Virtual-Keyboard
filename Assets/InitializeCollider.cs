@@ -44,6 +44,22 @@ public class InitializeCollider : MonoBehaviour
         }
     }
 
+    public void PressButton()
+    {
+        if (buttonState == ButtonState.RELEASED || buttonState == ButtonState.RELEASING)
+        {
+            buttonState = ButtonState.PRESSING;
+        }
+    }
+
+    public void ReleaseButton()
+    {
+        if (buttonState == ButtonState.PRESSED || buttonState == ButtonState.PRESSING)
+        {
+            buttonState = ButtonState.RELEASING;
+        }
+    }
+
     private void generateCollider()
     {
         BoxCollider boxCollider = gameObject.AddComponent<BoxCollider>();
