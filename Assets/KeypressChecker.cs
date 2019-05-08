@@ -11,22 +11,26 @@ using UnityEngine;
 
 public class KeypressChecker : MonoBehaviour
 {
-
     enum Hand { LEFT, RIGHT }
     private GameObject keyboardBase;
     private Matrix4x4 keyboardBaseTransform;
+
     private TFGraph leftNNGraph;
     private TFGraph rightNNGraph;
     private TFSession leftNNSession;
     private TFSession rightNNSession;
+
     public GameObject leftTipMarker;
     public GameObject leftMidMarker;
     public GameObject leftEndMarker;
     public GameObject rightTipMarker;
     public GameObject rightMidMarker;
     public GameObject rightEndMarker;
+
     private ThumbStateRecorder leftThumbRecorder = new ThumbStateRecorder();
     private ThumbStateRecorder rightThumbRecorder = new ThumbStateRecorder();
+    private Dictionary<GameObject, ThumbStateRecorder> markerRecorderMap = new Dictionary<GameObject, ThumbStateRecorder>();
+
     private string[] NNResultLogs;
     private int logIndex = 0;
     private string path = string.Format("{0}_NN_output.txt", DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss-fff"));
@@ -70,17 +74,28 @@ public class KeypressChecker : MonoBehaviour
 
     private void FixedUpdate()
     {
+
+
         if (rightTipMarker != null && rightMidMarker != null && rightEndMarker != null)
         {
+            if (!markerRecorderMap.ContainsKey(rightTipMarker))
+            {
+                markerRecorderMap[rightTipMarker] = rightThumbRecorder;
+            }
             bool rightKeypress = IsRightKeypress(rightTipMarker.transform.position, rightMidMarker.transform.position, rightEndMarker.transform.position, DateTime.Now);
             Debug.Log(string.Format("Right keypress: {0}", rightKeypress));
 
             bool majorityVote = rightThumbRecorder.UpdateAndVote(rightKeypress);
+            
             InitiateButtonAnimation(Hand.RIGHT, majorityVote);
         }
 
         if (leftTipMarker != null && leftMidMarker != null && leftEndMarker != null)
         {
+            if (!markerRecorderMap.ContainsKey(leftTipMarker))
+            {
+                markerRecorderMap[leftTipMarker] = leftThumbRecorder;
+            }
             bool leftKeypress = IsLeftKeypress(leftTipMarker.transform.position, leftMidMarker.transform.position, leftEndMarker.transform.position, DateTime.Now);
             Debug.Log(string.Format("Left keypress: {0}", leftKeypress));
 
@@ -94,6 +109,7 @@ public class KeypressChecker : MonoBehaviour
     private void InitiateButtonAnimation(Hand hand, bool isKeypress)
     {
         GameObject tipMarker = hand == Hand.LEFT ? leftTipMarker : rightTipMarker;
+        ThumbStateRecorder thumbStateRecorder = markerRecorderMap[tipMarker];
 
         // Search for the button closest to the tip marker
         var buttonPositionDictionary = keyboardBase.GetComponent<GenerateKeyboard>().transformedButtonPosDict;
@@ -116,11 +132,21 @@ public class KeypressChecker : MonoBehaviour
 
         if (isKeypress)
         {
-            closestButton.GetComponent<InitializeCollider>().PressButton();
+            if (!thumbStateRecorder.keypressLocked)
+            {
+                thumbStateRecorder.keypressLocked = true;
+                thumbStateRecorder.buttonPressed = closestButton;
+                closestButton.GetComponent<InitializeCollider>().PressButton();
+
+            }
         }
         else
         {
-            closestButton.GetComponent<InitializeCollider>().ReleaseButton();
+            if (thumbStateRecorder.keypressLocked)
+            {
+                thumbStateRecorder.keypressLocked = false;
+                closestButton.GetComponent<InitializeCollider>().ReleaseButton();
+            }
         }
     }
 
@@ -348,6 +374,8 @@ public class ThumbStateRecorder
     private List<bool> isKeypressHistory = new List<bool>();
     private int isKeypressCount = 0;
     private int keyPressHistoryLength = 5;
+    public bool keypressLocked = false;
+    public GameObject buttonPressed = null;
 
     public ThumbStateRecorder()
     {

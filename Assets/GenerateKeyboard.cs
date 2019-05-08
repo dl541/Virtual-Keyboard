@@ -21,7 +21,7 @@ public class GenerateKeyboard : MonoBehaviour
     private float horizontalMargin;
     private float verticalMargin;
     public List<GameObject> buttonList = new List<GameObject>();
-    public Dictionary<GameObject, Vector3> buttonPositionDictionary = new Dictionary<GameObject, Vector3>();
+    public Dictionary<GameObject, Vector3> transformedButtonPosDict = new Dictionary<GameObject, Vector3>();
     public Dictionary<string, GameObject> nameKeyMap = new Dictionary<string, GameObject>();
     public Dictionary<float, string[]> posToRowMap = new Dictionary<float, string[]>();
 
@@ -51,7 +51,7 @@ public class GenerateKeyboard : MonoBehaviour
             Vector2 buttonScale = button.GetComponentInParent<RectTransform>().lossyScale;
             Vector3 buttonWorldSize = Vector3.Scale(buttonSize / 2, buttonScale);
             Vector3 buttonWorldPosition = button.transform.position + Vector3.Scale(buttonWorldSize, new Vector3(1f, -1f));
-            buttonPositionDictionary[button] = buttonWorldPosition;
+            transformedButtonPosDict[button] = buttonWorldPosition;
             Debug.Log(string.Format("button {0}", button.name));
 
         }
