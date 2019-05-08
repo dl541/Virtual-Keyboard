@@ -32,6 +32,7 @@ public class KeypressChecker : MonoBehaviour
     private string path = string.Format("{0}_NN_output.txt", DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss-fff"));
     public bool enableNNLogs = false;
 
+
     // Use this for initialization
     void Start()
     {
@@ -67,7 +68,7 @@ public class KeypressChecker : MonoBehaviour
         //Debug.Log(string.Format("Transform: {0}", keyboardBaseTransform));
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         if (rightTipMarker != null && rightMidMarker != null && rightEndMarker != null)
         {
@@ -95,20 +96,16 @@ public class KeypressChecker : MonoBehaviour
         GameObject tipMarker = hand == Hand.LEFT ? leftTipMarker : rightTipMarker;
 
         // Search for the button closest to the tip marker
-        var buttonList = keyboardBase.GetComponent<GenerateKeyboard>().buttonList;
+        var buttonPositionDictionary = keyboardBase.GetComponent<GenerateKeyboard>().buttonPositionDictionary;
         var minDistance = float.PositiveInfinity;
-        GameObject closestButton = buttonList[0];
-        foreach (GameObject button in buttonList)
+        GameObject closestButton = null;
+        foreach (KeyValuePair<GameObject, Vector3> entry in buttonPositionDictionary)
         {
-            Vector2 buttonSize = button.GetComponent<RectTransform>().sizeDelta;
-            Vector2 buttonScale = button.GetComponentInParent<RectTransform>().lossyScale;
-            Vector3 buttonWorldSize = Vector3.Scale(buttonSize / 2, buttonScale);
-            Vector3 buttonWorldPosition = button.transform.position + Vector3.Scale(buttonWorldSize, new Vector3(1f, -1f));
-            var distance = (buttonWorldPosition - tipMarker.transform.position).magnitude;
+            var distance = (entry.Value - tipMarker.transform.position).magnitude;
 
             if (distance < minDistance)
             {
-                closestButton = button;
+                closestButton = entry.Key;
                 minDistance = distance;
             }
         }
@@ -392,4 +389,5 @@ public class ThumbStateRecorder
         isKeypressHistory.Add(isKeypress);
         return isKeypressCount * 2 >= keyPressHistoryLength;
     }
+
 }

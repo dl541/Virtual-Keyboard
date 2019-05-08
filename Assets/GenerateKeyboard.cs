@@ -21,6 +21,7 @@ public class GenerateKeyboard : MonoBehaviour
     private float horizontalMargin;
     private float verticalMargin;
     public List<GameObject> buttonList = new List<GameObject>();
+    public Dictionary<GameObject, Vector3> buttonPositionDictionary = new Dictionary<GameObject, Vector3>();
     public Dictionary<string, GameObject> nameKeyMap = new Dictionary<string, GameObject>();
     public Dictionary<float, string[]> posToRowMap = new Dictionary<float, string[]>();
 
@@ -43,11 +44,16 @@ public class GenerateKeyboard : MonoBehaviour
         verticalMargin = buttonSizeY / 5;
         keyboardBase.GetComponent<RectTransform>().sizeDelta = screenSize;
         generateKeys();
-        buttonList.Sort(new GridBasedComparer());
-
+       // buttonList.Sort(new GridBasedComparer());
         foreach (GameObject button in buttonList)
         {
+            Vector2 buttonSize = button.GetComponent<RectTransform>().sizeDelta;
+            Vector2 buttonScale = button.GetComponentInParent<RectTransform>().lossyScale;
+            Vector3 buttonWorldSize = Vector3.Scale(buttonSize / 2, buttonScale);
+            Vector3 buttonWorldPosition = button.transform.position + Vector3.Scale(buttonWorldSize, new Vector3(1f, -1f));
+            buttonPositionDictionary[button] = buttonWorldPosition;
             Debug.Log(string.Format("button {0}", button.name));
+
         }
         path = string.Format("{0}.txt", DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss-fff"));
     }

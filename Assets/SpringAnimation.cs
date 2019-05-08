@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class SpringAnimation : MonoBehaviour{
 
     public static float maxDepth = 80f;
-    private int maxFrameIndex = 1;
+    private int maxFrameIndex = 2;
     private int frameIndex = 0;
     private InputFieldManager inputFieldManager;
     private string inputFieldName = "InputField";
@@ -38,7 +38,7 @@ public class SpringAnimation : MonoBehaviour{
         else
         {
             //Move keyboard button
-           // gameObject.transform.localPosition += new Vector3(0f, 0f, maxDepth);
+            gameObject.transform.localPosition += new Vector3(0f, 0f, maxDepth/maxFrameIndex);
             frameIndex += 1;
         }
 
@@ -46,7 +46,14 @@ public class SpringAnimation : MonoBehaviour{
 
     public void releaseAnimation()
     {
-        //gameObject.transform.localPosition -= new Vector3(0f, 0f, -maxDepth);
+        if (frameIndex == 0)
+        {
+            gameObject.transform.localPosition -= new Vector3(0f, 0f, maxDepth);
+        }
+        else
+        {
+            gameObject.transform.localPosition -= new Vector3(0f, 0f, maxDepth/maxFrameIndex * frameIndex);
+        }
 
         var pointer = new PointerEventData(EventSystem.current);
         ExecuteEvents.Execute(gameObject, pointer, ExecuteEvents.pointerUpHandler);
