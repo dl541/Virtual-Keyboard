@@ -96,7 +96,7 @@ public class KeypressChecker : MonoBehaviour
         GameObject tipMarker = hand == Hand.LEFT ? leftTipMarker : rightTipMarker;
 
         // Search for the button closest to the tip marker
-        var buttonPositionDictionary = keyboardBase.GetComponent<GenerateKeyboard>().buttonPositionDictionary;
+        var buttonPositionDictionary = keyboardBase.GetComponent<GenerateKeyboard>().transformedButtonPosDict;
         var minDistance = float.PositiveInfinity;
         GameObject closestButton = null;
         foreach (KeyValuePair<GameObject, Vector3> entry in buttonPositionDictionary)

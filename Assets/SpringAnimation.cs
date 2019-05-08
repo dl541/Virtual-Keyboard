@@ -11,10 +11,12 @@ public class SpringAnimation : MonoBehaviour{
     private int frameIndex = 0;
     private InputFieldManager inputFieldManager;
     private string inputFieldName = "InputField";
+    private Vector3 originalPosition;
 
     private void Start()
     {
         inputFieldManager = GameObject.Find(inputFieldName).GetComponent<InputFieldManager>();
+        originalPosition = gameObject.transform.position;
     }
 
     public void pressAnimation()
@@ -27,10 +29,8 @@ public class SpringAnimation : MonoBehaviour{
         ExecuteEvents.Execute(gameObject, pointer, ExecuteEvents.pointerEnterHandler);
         ExecuteEvents.Execute(gameObject, pointer, ExecuteEvents.pointerDownHandler);
 
-        if (frameIndex == 0)
-        {
-            PlayAudio();   
-        }
+        //Play audio
+        //playAudio();
 
         if (frameIndex >= maxFrameIndex)
         {
@@ -46,25 +46,9 @@ public class SpringAnimation : MonoBehaviour{
 
     }
 
-    public void PlayAudio()
-    {
-        if (gameObject.GetComponent<AudioSource>() != null)
-        {
-            gameObject.GetComponent<AudioSource>().Play();
-            Debug.Log("Play typing sound.");
-        }
-    }
-
     public void releaseAnimation()
     {
-        if (frameIndex == 0)
-        {
-            gameObject.transform.localPosition -= new Vector3(0f, 0f, maxDepth);
-        }
-        else
-        {
-            gameObject.transform.localPosition -= new Vector3(0f, 0f, maxDepth/maxFrameIndex * frameIndex);
-        }
+        gameObject.transform.position = originalPosition;
 
         var pointer = new PointerEventData(EventSystem.current);
         ExecuteEvents.Execute(gameObject, pointer, ExecuteEvents.pointerUpHandler);
