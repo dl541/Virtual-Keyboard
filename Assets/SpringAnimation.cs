@@ -27,8 +27,10 @@ public class SpringAnimation : MonoBehaviour{
         ExecuteEvents.Execute(gameObject, pointer, ExecuteEvents.pointerEnterHandler);
         ExecuteEvents.Execute(gameObject, pointer, ExecuteEvents.pointerDownHandler);
 
-        //Play audio
-        //playAudio();
+        if (frameIndex == 0)
+        {
+            PlayAudio();   
+        }
 
         if (frameIndex >= maxFrameIndex)
         {
@@ -42,6 +44,15 @@ public class SpringAnimation : MonoBehaviour{
             frameIndex += 1;
         }
 
+    }
+
+    public void PlayAudio()
+    {
+        if (gameObject.GetComponent<AudioSource>() != null)
+        {
+            gameObject.GetComponent<AudioSource>().Play();
+            Debug.Log("Play typing sound.");
+        }
     }
 
     public void releaseAnimation()
