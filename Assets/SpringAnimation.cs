@@ -6,8 +6,8 @@ using UnityEngine.UI;
 
 public class SpringAnimation : MonoBehaviour{
 
-    public static float maxDepth = 80f;
-    private int maxFrameIndex = 3;
+    public static float maxDepth = 0f;
+    private int maxFrameIndex = 1;
     private int frameIndex = 0;
     private InputFieldManager inputFieldManager;
     private string inputFieldName = "InputField";
@@ -76,6 +76,10 @@ public class SpringAnimation : MonoBehaviour{
         if (gameObject.name  == "<-")
         {
             inputFieldManager.deleteFirstCharacter();
+        }
+        else
+        {
+            inputFieldManager.append(gameObject.name);
         }
     }
 }
