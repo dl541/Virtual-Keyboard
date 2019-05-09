@@ -28,4 +28,12 @@ public class InputFieldManager : MonoBehaviour {
         }
         inputField.text += character;
     }
+
+    public void deleteFirstCharacter()
+    {
+        if (inputField.text.Length != 0)
+        {
+            inputField.text = inputField.text.Substring(0, inputField.text.Length - 1);
+        }
+    }
 }

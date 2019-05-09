@@ -61,7 +61,16 @@ public class GenerateKeyboard : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        foreach (GameObject button in buttonList)
+        {
+            Vector2 buttonSize = button.GetComponent<RectTransform>().sizeDelta;
+            Vector2 buttonScale = button.GetComponentInParent<RectTransform>().lossyScale;
+            Vector3 buttonWorldSize = Vector3.Scale(buttonSize / 2, buttonScale);
+            Vector3 buttonWorldPosition = button.transform.position + Vector3.Scale(buttonWorldSize, new Vector3(1f, -1f));
+            transformedButtonPosDict[button] = buttonWorldPosition;
+            //Debug.Log(string.Format("button {0}", button.name));
 
+        }
     }
 
     void generateKeys()
@@ -87,7 +96,7 @@ public class GenerateKeyboard : MonoBehaviour
         firstPosInRow.x = 0;
         UpdateRowMap(secondRow);
 
-        string[] thirdRow = { "Shift", "z", "x", "c", "v", "b", "n", "m", "<-" };
+        string[] thirdRow = { ".", "z", "x", "c", "v", "b", "n", "m", "<-" };
         instantiateRow(thirdRow, firstPosInRow + upperCorner);
         firstPosInRow += new Vector3(0f, -buttonSizeY * buttonPrefabScale.y - buttonSpacingY, 0f);
         firstPosInRow.x = screenSize.x * 0.25f * buttonPrefabScale.x;

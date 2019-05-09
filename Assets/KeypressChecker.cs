@@ -47,7 +47,7 @@ public class KeypressChecker : MonoBehaviour
         }
 
         keyboardBase = GameObject.Find("KeyboardBase");
-        InitialiseTransformMatrix();
+        UpdateTransformMatrix();
 
         leftNNGraph = new TFGraph();
         leftNNGraph.Import(File.ReadAllBytes("Assets/tf_NN_focal_clf_left.pb"));
@@ -58,10 +58,10 @@ public class KeypressChecker : MonoBehaviour
         rightNNSession = new TFSession(rightNNGraph);
     }
 
-    void InitialiseTransformMatrix()
+    void UpdateTransformMatrix()
     {
         Matrix4x4 translationMatrix = Matrix4x4.TRS(-keyboardBase.transform.position, Quaternion.identity, Vector3.one);
-        Debug.Log(string.Format("Translation: {0}", translationMatrix));
+        //Debug.Log(string.Format("Translation: {0}", translationMatrix));
         Matrix4x4 rotationMatrix = Matrix4x4.TRS(Vector3.zero, keyboardBase.transform.rotation, Vector3.one).inverse;
         Matrix4x4 screenCoordinateMatrix = new Matrix4x4();
         screenCoordinateMatrix.SetColumn(0, rotationMatrix.GetColumn(0));
@@ -72,10 +72,13 @@ public class KeypressChecker : MonoBehaviour
         //Debug.Log(string.Format("Transform: {0}", keyboardBaseTransform));
     }
 
+    private void Update()
+    {
+        UpdateTransformMatrix();
+    }
+
     private void FixedUpdate()
     {
-
-
         if (rightTipMarker != null && rightMidMarker != null && rightEndMarker != null)
         {
             if (!markerRecorderMap.ContainsKey(rightTipMarker))
@@ -373,7 +376,7 @@ public class ThumbStateRecorder
     private Vector3 prevEndPos;
     private List<bool> isKeypressHistory = new List<bool>();
     private int isKeypressCount = 0;
-    private int keyPressHistoryLength = 5;
+    private int keyPressHistoryLength = 10;
     public bool keypressLocked = false;
     public GameObject buttonPressed = null;
 

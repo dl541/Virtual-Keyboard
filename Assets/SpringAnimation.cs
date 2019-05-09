@@ -7,16 +7,16 @@ using UnityEngine.UI;
 public class SpringAnimation : MonoBehaviour{
 
     public static float maxDepth = 80f;
-    private int maxFrameIndex = 2;
+    private int maxFrameIndex = 3;
     private int frameIndex = 0;
     private InputFieldManager inputFieldManager;
     private string inputFieldName = "InputField";
-    private Vector3 originalPosition;
+    private Vector3 originalLocalPosition;
 
     private void Start()
     {
         inputFieldManager = GameObject.Find(inputFieldName).GetComponent<InputFieldManager>();
-        originalPosition = gameObject.transform.position;
+        originalLocalPosition = gameObject.transform.localPosition;
     }
 
     public void pressAnimation()
@@ -59,15 +59,23 @@ public class SpringAnimation : MonoBehaviour{
 
     public void releaseAnimation()
     {
-        gameObject.transform.position = originalPosition;
+        gameObject.transform.localPosition = originalLocalPosition;
 
         var pointer = new PointerEventData(EventSystem.current);
         ExecuteEvents.Execute(gameObject, pointer, ExecuteEvents.pointerUpHandler);
         ExecuteEvents.Execute(gameObject, pointer, ExecuteEvents.pointerExitHandler);
 
         gameObject.GetComponent<InitializeCollider>().buttonState = ButtonState.RELEASED;
-        inputFieldManager.append(gameObject.name);
+        WriteToInputField();
         frameIndex = 0;
 
+    }
+
+    public void WriteToInputField()
+    {
+        if (gameObject.name  == "<-")
+        {
+            inputFieldManager.deleteFirstCharacter();
+        }
     }
 }
